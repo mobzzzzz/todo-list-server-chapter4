@@ -13,6 +13,11 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/todos")
 class TodoController: ApiV1MappingConfig() {
 
+    @GetMapping
+    fun getTodoList(): ResponseEntity<List<TodoDTO>> {
+        return ResponseEntity.status(HttpStatus.OK).body(TODO)
+    }
+
     @GetMapping("/{todo_id}")
     fun getTodo(@PathVariable("todo_id") todoId: String): ResponseEntity<TodoDTO> {
         // TODO: 특정 Todo 항목을 조회하는 로직을 구현하세요.

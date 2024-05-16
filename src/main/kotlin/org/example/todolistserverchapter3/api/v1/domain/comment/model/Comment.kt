@@ -1,42 +1,41 @@
 package org.example.todolistserverchapter3.api.v1.domain.comment.model
 
 import jakarta.persistence.*
+import jakarta.persistence.Table
 import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.model.Todo
 import org.example.todolistserverchapter3.api.v1.domain.user.model.User
-import org.hibernate.annotations.CreationTimestamp
-import org.hibernate.annotations.OnDelete
-import org.hibernate.annotations.OnDeleteAction
-import org.hibernate.annotations.UpdateTimestamp
+import org.hibernate.annotations.*
 import java.time.LocalDateTime
 
 @Entity
 @Table(name = "comment")
+@SQLDelete(sql = "UPDATE comment SET status = 'Deleted', deleted_at = NOW() WHERE id = ?")
+@SQLRestriction("status != 'Deleted'")
 class Comment(
     @Column(name = "content")
     var content: String,
 
-    // 익명의 사용자를 Comment 에서 분리하는 획기적인 방법?
     @Column(name = "name")
-    var name: String?,
+    var name: String? = null,
 
     @Column(name = "password")
-    var password: String?,
+    var password: String? = null,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    var status: CommentStatus,
+    var status: CommentStatus = CommentStatus.Alive,
 
     @CreationTimestamp
     @Column(name = "created_at")
-    val createdAt: LocalDateTime,
+    val createdAt: LocalDateTime = LocalDateTime.now(),
 
     @UpdateTimestamp
     @Column(name = "updated_at")
-    var updatedAt: LocalDateTime?,
+    var updatedAt: LocalDateTime? = null,
 
     @Column(name = "deleted_at")
-    var deletedAt: LocalDateTime?,
+    var deletedAt: LocalDateTime? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "todo_id")

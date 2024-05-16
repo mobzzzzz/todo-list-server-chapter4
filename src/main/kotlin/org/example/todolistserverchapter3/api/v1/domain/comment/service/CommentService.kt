@@ -4,9 +4,10 @@ import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentCreat
 import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentCreateWithUserDto
 import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentDto
 import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentUpdateDto
+import org.example.todolistserverchapter3.api.v1.domain.comment.query.CommentSort
 
 interface CommentService {
-    fun getComments(todoId: Long): List<CommentDto>
+    fun getCommentList(todoId: Long, sort: CommentSort): List<CommentDto>
 
     fun getComment(todoId: Long, commentId: Long): CommentDto
 

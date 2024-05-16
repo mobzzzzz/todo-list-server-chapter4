@@ -6,6 +6,7 @@ import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentDto
 import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentUpdateDto
 import org.example.todolistserverchapter3.api.v1.domain.comment.model.Comment
 import org.example.todolistserverchapter3.api.v1.domain.comment.model.toDto
+import org.example.todolistserverchapter3.api.v1.domain.comment.query.CommentSort
 import org.example.todolistserverchapter3.api.v1.domain.comment.repository.CommentRepository
 import org.example.todolistserverchapter3.api.v1.domain.exception.ModelNotFoundException
 import org.example.todolistserverchapter3.api.v1.domain.todo.repository.TodoRepository
@@ -20,8 +21,11 @@ class CommentServiceImpl(
     private val todoRepository: TodoRepository,
     private val userRepository: UserRepository
 ) : CommentService {
-    override fun getComments(todoId: Long): List<CommentDto> {
-        return commentRepository.findAllByTodoId(todoId).map { it.toDto() }
+    override fun getCommentList(todoId: Long, sort: CommentSort): List<CommentDto> {
+        return when (sort) {
+            CommentSort.CREATED_AT_ASC -> commentRepository.findAllByTodoIdOrderByCreatedAtAsc(todoId)
+            CommentSort.CREATED_AT_DESC -> commentRepository.findAllByTodoIdOrderByCreatedAtDesc(todoId)
+        }.map { it.toDto() }
     }
 
     override fun getComment(todoId: Long, commentId: Long): CommentDto {

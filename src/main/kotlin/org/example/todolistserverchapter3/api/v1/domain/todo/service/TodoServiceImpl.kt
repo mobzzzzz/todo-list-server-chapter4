@@ -8,8 +8,10 @@ import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoUpdateDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.model.Todo
 import org.example.todolistserverchapter3.api.v1.domain.todo.model.TodoCardStatus
 import org.example.todolistserverchapter3.api.v1.domain.todo.model.toDto
+import org.example.todolistserverchapter3.api.v1.domain.todo.query.TodoSort
 import org.example.todolistserverchapter3.api.v1.domain.todo.repository.TodoRepository
 import org.example.todolistserverchapter3.api.v1.domain.user.repository.UserRepository
+import org.springframework.data.domain.Sort
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -19,8 +21,18 @@ class TodoServiceImpl(
     val todoRepository: TodoRepository,
     val userRepository: UserRepository,
 ) : TodoService {
-    override fun getTodos(): List<TodoDto> {
-        return todoRepository.findAll().map { it.toDto() }
+    override fun getTodoList(sort: TodoSort): List<TodoDto> {
+        val todos = todoRepository.findAll(
+            Sort.by(
+                when (sort) {
+                    TodoSort.CREATED_AT_DESC -> Sort.Direction.DESC
+                    TodoSort.CREATED_AT_ASC -> Sort.Direction.ASC
+                },
+                "created_at"
+            )
+        )
+
+        return todos.map { it.toDto() }
     }
 
     override fun getTodo(todoId: Long): TodoDto {

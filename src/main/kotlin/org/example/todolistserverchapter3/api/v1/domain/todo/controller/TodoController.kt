@@ -1,10 +1,8 @@
 package org.example.todolistserverchapter3.api.v1.domain.todo.controller
 
 import org.example.todolistserverchapter3.api.v1.domain.ApiV1MappingConfig
-import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoCreateDto
-import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoDto
-import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoUpdateCardStatusDto
-import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoUpdateDto
+import org.example.todolistserverchapter3.api.v1.domain.todo.dto.*
+import org.example.todolistserverchapter3.api.v1.domain.todo.query.TodoSort
 import org.example.todolistserverchapter3.api.v1.domain.todo.service.TodoService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -17,8 +15,8 @@ class TodoController(
 ) : ApiV1MappingConfig() {
 
     @GetMapping
-    fun getTodoList(): ResponseEntity<List<TodoDto>> {
-        return ResponseEntity.status(HttpStatus.OK).body(todoService.getTodos())
+    fun getTodoList(@RequestParam(defaultValue = "created_at_asc") sort: TodoSort): ResponseEntity<List<TodoDto>> {
+        return ResponseEntity.status(HttpStatus.OK).body(todoService.getTodoList(sort))
     }
 
     @GetMapping("/{todo_id}")

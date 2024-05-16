@@ -5,6 +5,7 @@ import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentCreat
 import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentCreateWithUserDto
 import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentDto
 import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentUpdateDto
+import org.example.todolistserverchapter3.api.v1.domain.comment.query.CommentSort
 import org.example.todolistserverchapter3.api.v1.domain.comment.service.CommentService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -17,8 +18,8 @@ class CommentController(
 ) : ApiV1MappingConfig() {
 
     @GetMapping
-    fun getComments(@PathVariable("todo_id") todoId: Long): ResponseEntity<List<CommentDto>> {
-        return ResponseEntity.status(HttpStatus.OK).body(commentService.getComments(todoId))
+    fun getCommentList(@PathVariable("todo_id") todoId: Long, @RequestParam(defaultValue = "created_at_asc") sort: CommentSort): ResponseEntity<List<CommentDto>> {
+        return ResponseEntity.status(HttpStatus.OK).body(commentService.getCommentList(todoId, sort))
     }
 
     @GetMapping("/{comment_id}")

@@ -53,6 +53,6 @@ fun Todo.toDto(): TodoDto {
         description = this.description,
         status = this.status.name,
         cardStatus = this.cardStatus.name,
-        createdAt = this.createdAt
+        createdAt = this.createdAt.toString()
     )
 }

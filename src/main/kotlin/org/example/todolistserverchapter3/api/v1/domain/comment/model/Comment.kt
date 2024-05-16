@@ -5,6 +5,8 @@ import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.model.Todo
 import org.example.todolistserverchapter3.api.v1.domain.user.model.User
 import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.OnDelete
+import org.hibernate.annotations.OnDeleteAction
 import org.hibernate.annotations.UpdateTimestamp
 import java.time.LocalDateTime
 
@@ -38,6 +40,7 @@ class Comment(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "todo_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     val todo: Todo,
 
     @ManyToOne(fetch = FetchType.LAZY)

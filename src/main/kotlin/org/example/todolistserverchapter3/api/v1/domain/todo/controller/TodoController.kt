@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/todos")
 class TodoController(
     private val todoService: TodoService
-): ApiV1MappingConfig() {
+) : ApiV1MappingConfig() {
 
     @GetMapping
     fun getTodoList(): ResponseEntity<List<TodoDto>> {
@@ -32,12 +32,18 @@ class TodoController(
     }
 
     @PutMapping("/{todo_id}")
-    fun updateTodo(@PathVariable("todo_id") todoId: Long, @RequestBody request: TodoUpdateDto): ResponseEntity<TodoDto> {
+    fun updateTodo(
+        @PathVariable("todo_id") todoId: Long,
+        @RequestBody request: TodoUpdateDto
+    ): ResponseEntity<TodoDto> {
         return ResponseEntity.status(HttpStatus.OK).body(todoService.updateTodo(todoId, request))
     }
 
     @PutMapping("/{todo_id}/status")
-    fun updateTodoCardStatus(@PathVariable("todo_id") todoId: Long, @RequestBody request: TodoUpdateCardStatusDto): ResponseEntity<TodoDto> {
+    fun updateTodoCardStatus(
+        @PathVariable("todo_id") todoId: Long,
+        @RequestBody request: TodoUpdateCardStatusDto
+    ): ResponseEntity<TodoDto> {
         return ResponseEntity.status(HttpStatus.OK).body(todoService.updateTodoCardStatus(todoId, request))
     }
 

@@ -36,7 +36,10 @@ class CommentServiceImpl(
     @Transactional
     override fun createComment(todoId: Long, request: CommentCreateWithUserDto): CommentDto {
         val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
-        val user = userRepository.findByIdOrNull(request.userId) ?: throw ModelNotFoundException("User not found", request.userId)
+        val user = userRepository.findByIdOrNull(request.userId) ?: throw ModelNotFoundException(
+            "User not found",
+            request.userId
+        )
 
         return commentRepository.save(
             Comment(

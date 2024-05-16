@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 class UserController(
     val userService: UserService
-): ApiV1MappingConfig() {
+) : ApiV1MappingConfig() {
 
     @PostMapping("/signup")
     fun signUp(@RequestBody request: SignUpDto): ResponseEntity<UserDto> {
@@ -38,7 +38,10 @@ class UserController(
     }
 
     @PutMapping("/users/{user_id}/profile")
-    fun updateProfile(@PathVariable("user_id") userId: Long, @RequestBody request: UserUpdateProfileDto): ResponseEntity<UserDto> {
+    fun updateProfile(
+        @PathVariable("user_id") userId: Long,
+        @RequestBody request: UserUpdateProfileDto
+    ): ResponseEntity<UserDto> {
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUserProfile(userId, request))
     }
 

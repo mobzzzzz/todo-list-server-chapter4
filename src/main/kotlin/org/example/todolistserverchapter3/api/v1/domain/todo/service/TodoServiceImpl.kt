@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional
 class TodoServiceImpl(
     val todoRepository: TodoRepository,
     val userRepository: UserRepository,
-): TodoService {
+) : TodoService {
     override fun getTodos(): List<TodoDto> {
         return todoRepository.findAll().map { it.toDto() }
     }
@@ -29,12 +29,17 @@ class TodoServiceImpl(
 
     @Transactional
     override fun createTodo(request: TodoCreateDto): TodoDto {
-        val user = userRepository.findByIdOrNull(request.userId) ?: throw ModelNotFoundException("User not found", request.userId)
-        return todoRepository.save(Todo(
-            title = request.title,
-            description = request.description,
-            user = user
-        )).toDto()
+        val user = userRepository.findByIdOrNull(request.userId) ?: throw ModelNotFoundException(
+            "User not found",
+            request.userId
+        )
+        return todoRepository.save(
+            Todo(
+                title = request.title,
+                description = request.description,
+                user = user
+            )
+        ).toDto()
     }
 
     @Transactional

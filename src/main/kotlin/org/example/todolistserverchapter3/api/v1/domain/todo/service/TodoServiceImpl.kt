@@ -4,6 +4,7 @@ import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoCreateDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoUpdateCardStatusDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoUpdateDto
+import org.example.todolistserverchapter3.api.v1.domain.todo.model.toDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.repository.TodoRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -13,7 +14,7 @@ class TodoServiceImpl(
     val todoRepository: TodoRepository,
 ): TodoService {
     override fun getTodos(): List<TodoDto> {
-        return todoRepository.findAll().map { it.toDTO() }
+        return todoRepository.findAll().map { it.toDto() }
     }
 
     override fun getTodo(todoId: Long): TodoDto {

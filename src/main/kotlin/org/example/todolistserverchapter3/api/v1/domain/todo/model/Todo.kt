@@ -1,6 +1,7 @@
 package org.example.todolistserverchapter3.api.v1.domain.todo.model
 
 import jakarta.persistence.*
+import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoDto
 import org.example.todolistserverchapter3.api.v1.domain.user.model.User
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
@@ -41,4 +42,17 @@ class Todo(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
+}
+
+fun Todo.toDto(): TodoDto {
+    return TodoDto(
+        id = this.id!!,
+        userId = this.user.id!!,
+        userName = this.user.profile.nickname,
+        title = this.title,
+        description = this.description,
+        status = this.status.name,
+        cardStatus = this.cardStatus.name,
+        createdAt = this.createdAt
+    )
 }

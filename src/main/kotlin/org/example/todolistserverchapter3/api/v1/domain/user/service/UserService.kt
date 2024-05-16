@@ -3,16 +3,17 @@ package org.example.todolistserverchapter3.api.v1.domain.user.service
 import org.example.todolistserverchapter3.api.v1.domain.user.dto.SignInDto
 import org.example.todolistserverchapter3.api.v1.domain.user.dto.SignUpDto
 import org.example.todolistserverchapter3.api.v1.domain.user.dto.UserDto
+import org.example.todolistserverchapter3.api.v1.domain.user.dto.UserUpdateProfileDto
 
 interface UserService {
 
-    fun signUp(email: String, password: String, request: SignUpDto): UserDto
+    fun signUp(request: SignUpDto): UserDto
 
-    fun signIn(email: String, password: String, request: SignInDto): UserDto
+    fun signIn(request: SignInDto): UserDto
 
     fun signOut()
 
-    fun getUserProfile(): UserDto
+    fun getUserProfile(userId: Long): UserDto
 
-    fun updateUserProfile(email: String, password: String): UserDto
+    fun updateUserProfile(userId: Long, request: UserUpdateProfileDto): UserDto
 }

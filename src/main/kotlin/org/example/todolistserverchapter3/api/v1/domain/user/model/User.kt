@@ -20,18 +20,18 @@ class User(
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
-    var role: UserRole,
+    var role: UserRole = UserRole.User,
 
     @CreationTimestamp
     @Column(name = "registered_at")
-    val registeredAt: LocalDateTime,
+    val registeredAt: LocalDateTime = LocalDateTime.now(),
 
     @UpdateTimestamp
     @Column(name = "updated_at")
-    var updatedAt: LocalDateTime?,
+    var updatedAt: LocalDateTime? = null,
 
     @Column(name = "last_signin_at")
-    var lastSignInAt: LocalDateTime?,
+    var lastSignInAt: LocalDateTime? = null,
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

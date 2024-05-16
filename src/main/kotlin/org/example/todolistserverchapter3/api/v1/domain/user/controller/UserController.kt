@@ -5,46 +5,47 @@ import org.example.todolistserverchapter3.api.v1.domain.user.dto.UserDto
 import org.example.todolistserverchapter3.api.v1.domain.user.dto.SignInDto
 import org.example.todolistserverchapter3.api.v1.domain.user.dto.SignUpDto
 import org.example.todolistserverchapter3.api.v1.domain.user.dto.UserUpdateProfileDto
+import org.example.todolistserverchapter3.api.v1.domain.user.service.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-class UserController: ApiV1MappingConfig() {
+class UserController(
+    val userService: UserService
+): ApiV1MappingConfig() {
 
     @PostMapping("/signup")
-    fun signUp(@RequestBody request: SignUpDto): ResponseEntity<Unit> {
-        // TODO: 사용자 등록 로직을 구현하세요.
-        return ResponseEntity.status(HttpStatus.CREATED).build()
+    fun signUp(@RequestBody request: SignUpDto): ResponseEntity<UserDto> {
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.signUp(request))
     }
 
     @PostMapping("/signin")
-    fun signIn(@RequestBody request: SignInDto): ResponseEntity<Unit> {
-        // TODO: 로그인 로직을 구현하세요.
-        return ResponseEntity.status(HttpStatus.OK).build()
+    fun signIn(@RequestBody request: SignInDto): ResponseEntity<UserDto> {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.signIn(request))
     }
 
     @PostMapping("/signout")
     fun signOut(): ResponseEntity<Unit> {
-        // TODO: 로그아웃 로직을 구현하세요.
+        userService.signOut()
+
         return ResponseEntity.status(HttpStatus.OK).build()
     }
 
     @GetMapping("/users/{user_id}/profile")
-    fun getProfile(@PathVariable("user_id") userId: String): ResponseEntity<UserDto> {
-        // TODO: 사용자 프로필 조회 로직을 구현하세요.
-        return ResponseEntity.status(HttpStatus.OK).body(TODO)
+    fun getProfile(@PathVariable("user_id") userId: Long): ResponseEntity<UserDto> {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserProfile(userId))
     }
 
     @PutMapping("/users/{user_id}/profile")
-    fun updateProfile(@PathVariable("user_id") userId: String, @RequestBody request: UserUpdateProfileDto): ResponseEntity<UserDto> {
-        // TODO: 사용자 프로필 조회 로직을 구현하세요.
-        return ResponseEntity.status(HttpStatus.OK).body(TODO)
+    fun updateProfile(@PathVariable("user_id") userId: Long, @RequestBody request: UserUpdateProfileDto): ResponseEntity<UserDto> {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUserProfile(userId, request))
     }
 
     @DeleteMapping("/users/{user_id}/deactivate")
-    fun deactivate(@PathVariable("user_id") userId: String): ResponseEntity<Unit> {
-        // TODO: 사용자 계정 비활성화 로직을 구현하세요.
+    fun deactivate(@PathVariable("user_id") userId: Long): ResponseEntity<Unit> {
+        userService.deactivate(userId)
+
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }
 }

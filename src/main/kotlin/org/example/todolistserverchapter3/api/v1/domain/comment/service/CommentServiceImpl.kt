@@ -1,6 +1,7 @@
 package org.example.todolistserverchapter3.api.v1.domain.comment.service
 
-import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentCreateDto
+import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentCreateWithNamePasswordDto
+import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentCreateWithUserDto
 import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentDto
 import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentUpdateDto
 import org.example.todolistserverchapter3.api.v1.domain.comment.model.Comment
@@ -33,16 +34,27 @@ class CommentServiceImpl(
     }
 
     @Transactional
-    override fun createComment(todoId: Long, request: CommentCreateDto): CommentDto {
+    override fun createComment(todoId: Long, request: CommentCreateWithUserDto): CommentDto {
         val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
-        val user = userRepository.findByIdOrNull(request.userId)
-
+        val user = userRepository.findByIdOrNull(request.userId) ?: throw ModelNotFoundException("User not found", request.userId)
 
         return commentRepository.save(
             Comment(
                 content = request.content,
                 todo = todo,
                 user = user,
+            )
+        ).toDto()
+    }
+
+    @Transactional
+    override fun createComment(todoId: Long, request: CommentCreateWithNamePasswordDto): CommentDto {
+        val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
+
+        return commentRepository.save(
+            Comment(
+                content = request.content,
+                todo = todo,
                 name = request.name,
                 password = request.password
             )

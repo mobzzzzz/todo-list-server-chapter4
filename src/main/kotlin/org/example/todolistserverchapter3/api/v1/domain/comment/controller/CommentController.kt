@@ -1,7 +1,8 @@
 package org.example.todolistserverchapter3.api.v1.domain.comment.controller
 
 import org.example.todolistserverchapter3.api.v1.domain.ApiV1MappingConfig
-import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentCreateDto
+import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentCreateWithNamePasswordDto
+import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentCreateWithUserDto
 import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentDto
 import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentUpdateDto
 import org.example.todolistserverchapter3.api.v1.domain.comment.service.CommentService
@@ -26,7 +27,12 @@ class CommentController(
     }
 
     @PostMapping
-    fun createComment(@PathVariable("todo_id") todoId: Long, @RequestBody request: CommentCreateDto): ResponseEntity<CommentDto> {
+    fun createComment(@PathVariable("todo_id") todoId: Long, @RequestBody request: CommentCreateWithUserDto): ResponseEntity<CommentDto> {
+        return ResponseEntity.status(HttpStatus.CREATED).body(commentService.createComment(todoId, request))
+    }
+
+    @PostMapping("/anonymous")
+    fun createComment(@PathVariable("todo_id") todoId: Long, @RequestBody request: CommentCreateWithNamePasswordDto): ResponseEntity<CommentDto> {
         return ResponseEntity.status(HttpStatus.CREATED).body(commentService.createComment(todoId, request))
     }
 

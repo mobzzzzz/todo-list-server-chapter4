@@ -44,7 +44,7 @@ class Comment(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    val user: User?,
+    val user: User? = null,
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

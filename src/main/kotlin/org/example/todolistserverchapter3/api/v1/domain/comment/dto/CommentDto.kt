@@ -1,7 +1,5 @@
 package org.example.todolistserverchapter3.api.v1.domain.comment.dto
 
-import java.time.LocalDateTime
-
 data class CommentDto(
     val id: Long,
     val todoId: Long,

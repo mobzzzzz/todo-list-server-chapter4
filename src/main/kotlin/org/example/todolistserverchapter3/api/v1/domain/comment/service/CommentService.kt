@@ -1,18 +1,17 @@
 package org.example.todolistserverchapter3.api.v1.domain.comment.service
 
-import com.sun.tools.javac.comp.Todo
-import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentCreateDTO
-import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentDTO
-import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentUpdateDTO
+import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentCreateDto
+import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentDto
+import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentUpdateDto
 
 interface CommentService {
-    fun getComments(todoId: Long): List<CommentDTO>
+    fun getComments(todoId: Long): List<CommentDto>
 
-    fun getComment(todoId: Long, commentId: Long): CommentDTO
+    fun getComment(todoId: Long, commentId: Long): CommentDto
 
-    fun createComment(todoId: Long, request: CommentCreateDTO): CommentDTO
+    fun createComment(todoId: Long, request: CommentCreateDto): CommentDto
 
-    fun updateComment(todoId: Long, commentId: Long, request: CommentUpdateDTO): CommentDTO
+    fun updateComment(todoId: Long, commentId: Long, request: CommentUpdateDto): CommentDto
 
     fun deleteComment(todoId: Long, commentId: Long)
 }

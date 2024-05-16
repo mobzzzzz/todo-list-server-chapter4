@@ -23,8 +23,8 @@ class CommentServiceImpl(
 ) : CommentService {
     override fun getCommentList(todoId: Long, sort: CommentSort): List<CommentDto> {
         return when (sort) {
-            CommentSort.CREATED_AT_ASC -> commentRepository.findAllByTodoIdOrderByCreatedAtAsc(todoId)
-            CommentSort.CREATED_AT_DESC -> commentRepository.findAllByTodoIdOrderByCreatedAtDesc(todoId)
+            CommentSort.CreatedAtAsc -> commentRepository.findAllByTodoIdOrderByCreatedAtAsc(todoId)
+            CommentSort.CreatedAtDesc -> commentRepository.findAllByTodoIdOrderByCreatedAtDesc(todoId)
         }.map { it.toDto() }
     }
 

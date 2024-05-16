@@ -25,8 +25,8 @@ class TodoServiceImpl(
         val todos = todoRepository.findAll(
             Sort.by(
                 when (sort) {
-                    TodoSort.CREATED_AT_DESC -> Sort.Direction.DESC
-                    TodoSort.CREATED_AT_ASC -> Sort.Direction.ASC
+                    TodoSort.CreatedAtDesc -> Sort.Direction.DESC
+                    TodoSort.CreatedAtAsc -> Sort.Direction.ASC
                 },
                 "created_at"
             )

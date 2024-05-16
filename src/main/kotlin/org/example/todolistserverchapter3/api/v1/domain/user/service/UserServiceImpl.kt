@@ -54,4 +54,11 @@ class UserServiceImpl(
 
         return userRepository.save(user).toDto()
     }
+
+    @Transactional
+    override fun deactivate(userId: Long) {
+        val user = userRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User not found", userId)
+
+        userRepository.delete(user)
+    }
 }

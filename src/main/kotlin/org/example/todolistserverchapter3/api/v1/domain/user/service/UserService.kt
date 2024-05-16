@@ -16,4 +16,6 @@ interface UserService {
     fun getUserProfile(userId: Long): UserDto
 
     fun updateUserProfile(userId: Long, request: UserUpdateProfileDto): UserDto
+
+    fun deactivate(userId: Long)
 }

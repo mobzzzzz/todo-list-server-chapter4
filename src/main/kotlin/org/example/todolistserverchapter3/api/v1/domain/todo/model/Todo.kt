@@ -44,6 +44,10 @@ class Todo(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
+
+    fun isOwner(user: User): Boolean {
+        return this.user == user
+    }
 }
 
 fun Todo.toDto(): TodoDto {

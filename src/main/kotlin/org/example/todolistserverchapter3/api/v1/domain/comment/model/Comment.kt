@@ -49,6 +49,16 @@ class Comment(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
+
+    fun isOwner(password: String): Boolean {
+        return this.password == password
+    }
+
+    fun isOwner(user: User): Boolean {
+        return this.user == user
+    }
+
+    fun getUserName() = this.user?.profile?.nickname ?: this.name ?: ""
 }
 
 fun Comment.toDto(): CommentDto {
@@ -57,7 +67,7 @@ fun Comment.toDto(): CommentDto {
         todoId = this.todo.id!!,
         userId = this.user?.id,
         content = this.content,
-        name = this.user?.profile?.nickname ?: this.name ?: "",
+        name = this.getUserName(),
         status = this.status.name,
         createdAt = this.createdAt.toString(),
     )

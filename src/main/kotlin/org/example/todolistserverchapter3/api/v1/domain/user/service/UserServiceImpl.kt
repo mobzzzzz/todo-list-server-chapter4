@@ -50,7 +50,7 @@ class UserServiceImpl(
     @Transactional
     override fun updateUserProfile(userId: Long, request: UserUpdateProfileDto): UserDto {
         val user = userRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User not found", userId)
-        user.profile = Profile(request.nickname)
+        user.updateProfile(request.nickname)
 
         return userRepository.save(user).toDto()
     }

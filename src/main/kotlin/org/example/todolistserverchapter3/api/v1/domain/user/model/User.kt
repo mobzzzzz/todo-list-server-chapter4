@@ -36,6 +36,10 @@ class User(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
+
+    fun updateProfile(nickname: String) {
+        this.profile = Profile(nickname = nickname)
+    }
 }
 
 fun User.toDto(): UserDto {

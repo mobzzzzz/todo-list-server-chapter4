@@ -67,6 +67,7 @@ todolistserverchapter3
 - repository 패키지는 DB와 직접적으로 통신하는 JpaRepository 인터페이스를 담고 있습니다.
 - service 패키지는 비즈니스 로직을 처리하는 서비스 인터페이스와 구현체를 담고 있습니다.
 
+## [/api/v1 package로 이동](src/main/kotlin/org/example/todolistserverchapter3/api/v1)
 
 # 통신 흐름
 

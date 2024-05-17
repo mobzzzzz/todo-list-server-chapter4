@@ -1,15 +1,18 @@
 package org.example.todolistserverchapter3.api.v1.domain.todo.controller
 
+import jakarta.validation.Valid
 import org.example.todolistserverchapter3.api.v1.domain.ApiV1MappingConfig
 import org.example.todolistserverchapter3.api.v1.domain.todo.dto.*
 import org.example.todolistserverchapter3.api.v1.domain.todo.query.TodoSort
 import org.example.todolistserverchapter3.api.v1.domain.todo.service.TodoService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/todos")
+@Validated
 class TodoController(
     private val todoService: TodoService
 ) : ApiV1MappingConfig() {
@@ -25,14 +28,14 @@ class TodoController(
     }
 
     @PostMapping
-    fun createTodo(@RequestBody request: TodoCreateDto): ResponseEntity<TodoDto> {
+    fun createTodo(@Valid @RequestBody request: TodoCreateDto): ResponseEntity<TodoDto> {
         return ResponseEntity.status(HttpStatus.CREATED).body(todoService.createTodo(request))
     }
 
     @PutMapping("/{todo_id}")
     fun updateTodo(
         @PathVariable("todo_id") todoId: Long,
-        @RequestBody request: TodoUpdateDto
+        @Valid @RequestBody request: TodoUpdateDto
     ): ResponseEntity<TodoDto> {
         return ResponseEntity.status(HttpStatus.OK).body(todoService.updateTodo(todoId, request))
     }
@@ -40,7 +43,7 @@ class TodoController(
     @PutMapping("/{todo_id}/status")
     fun updateTodoCardStatus(
         @PathVariable("todo_id") todoId: Long,
-        @RequestBody request: TodoUpdateCardStatusDto
+        @Valid @RequestBody request: TodoUpdateCardStatusDto
     ): ResponseEntity<TodoDto> {
         return ResponseEntity.status(HttpStatus.OK).body(todoService.updateTodoCardStatus(todoId, request))
     }

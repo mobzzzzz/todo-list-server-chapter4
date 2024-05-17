@@ -51,11 +51,14 @@ class TodoServiceImpl(
             "User not found",
             request.userId
         )
+
+        val (title, description) = request
+
         return DtoConverter.convertToTodoDto(
             todoRepository.save(
                 Todo(
-                    title = request.title,
-                    description = request.description,
+                    title = title,
+                    description = description,
                     user = user
                 ),
             )
@@ -67,6 +70,7 @@ class TodoServiceImpl(
         val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
 
         val (title, description) = request
+
         todo.title = title
         todo.description = description
 

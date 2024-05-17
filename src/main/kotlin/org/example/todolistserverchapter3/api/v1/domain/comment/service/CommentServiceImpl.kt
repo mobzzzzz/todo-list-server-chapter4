@@ -5,12 +5,12 @@ import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentCreat
 import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentDto
 import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentUpdateDto
 import org.example.todolistserverchapter3.api.v1.domain.comment.model.Comment
-import org.example.todolistserverchapter3.api.v1.domain.comment.model.toDto
 import org.example.todolistserverchapter3.api.v1.domain.comment.query.CommentSort
 import org.example.todolistserverchapter3.api.v1.domain.comment.repository.CommentRepository
-import org.example.todolistserverchapter3.api.v1.exception.ModelNotFoundException
 import org.example.todolistserverchapter3.api.v1.domain.todo.repository.TodoRepository
 import org.example.todolistserverchapter3.api.v1.domain.user.repository.UserRepository
+import org.example.todolistserverchapter3.api.v1.exception.ModelNotFoundException
+import org.example.todolistserverchapter3.api.v1.util.DtoConverter
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -25,7 +25,7 @@ class CommentServiceImpl(
         return when (sort) {
             CommentSort.CreatedAtAsc -> commentRepository.findAllByTodoIdOrderByCreatedAtAsc(todoId)
             CommentSort.CreatedAtDesc -> commentRepository.findAllByTodoIdOrderByCreatedAtDesc(todoId)
-        }.map { it.toDto() }
+        }.map { DtoConverter.convertToCommentDto(it) }
     }
 
     override fun getComment(todoId: Long, commentId: Long): CommentDto {
@@ -34,7 +34,7 @@ class CommentServiceImpl(
             todoId
         )
 
-        return comment.toDto()
+        return DtoConverter.convertToCommentDto(comment)
     }
 
     @Transactional
@@ -45,27 +45,31 @@ class CommentServiceImpl(
             request.userId
         )
 
-        return commentRepository.save(
-            Comment(
-                content = request.content,
-                todo = todo,
-                user = user,
+        return DtoConverter.convertToCommentDto(
+            commentRepository.save(
+                Comment(
+                    content = request.content,
+                    todo = todo,
+                    user = user,
+                )
             )
-        ).toDto()
+        )
     }
 
     @Transactional
     override fun createComment(todoId: Long, request: CommentCreateWithNamePasswordDto): CommentDto {
         val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
 
-        return commentRepository.save(
-            Comment(
-                content = request.content,
-                todo = todo,
-                name = request.name,
-                password = request.password
+        return DtoConverter.convertToCommentDto(
+            commentRepository.save(
+                Comment(
+                    content = request.content,
+                    todo = todo,
+                    name = request.name,
+                    password = request.password
+                )
             )
-        ).toDto()
+        )
     }
 
     @Transactional
@@ -77,7 +81,7 @@ class CommentServiceImpl(
 
         comment.content = request.content
 
-        return commentRepository.save(comment).toDto()
+        return DtoConverter.convertToCommentDto(commentRepository.save(comment))
     }
 
     @Transactional

@@ -7,8 +7,8 @@ import org.example.todolistserverchapter3.api.v1.domain.user.dto.UserDto
 import org.example.todolistserverchapter3.api.v1.domain.user.dto.UserUpdateProfileDto
 import org.example.todolistserverchapter3.api.v1.domain.user.model.Profile
 import org.example.todolistserverchapter3.api.v1.domain.user.model.User
-import org.example.todolistserverchapter3.api.v1.domain.user.model.toDto
 import org.example.todolistserverchapter3.api.v1.domain.user.repository.UserRepository
+import org.example.todolistserverchapter3.api.v1.util.DtoConverter
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -25,7 +25,7 @@ class UserServiceImpl(
             profile = Profile(request.nickname)
         )
 
-        return userRepository.save(user).toDto()
+        return DtoConverter.convertToUserDto(userRepository.save(user))
     }
 
     @Transactional
@@ -33,7 +33,7 @@ class UserServiceImpl(
         val user = userRepository.findByEmailAndPassword(request.email, request.password)
             ?: throw IllegalStateException("User not found with email")
 
-        return user.toDto()
+        return DtoConverter.convertToUserDto(user)
     }
 
     @Transactional
@@ -44,7 +44,7 @@ class UserServiceImpl(
     override fun getUserProfile(userId: Long): UserDto {
         val user = userRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User not found", userId)
 
-        return user.toDto()
+        return DtoConverter.convertToUserDto(user)
     }
 
     @Transactional
@@ -52,7 +52,7 @@ class UserServiceImpl(
         val user = userRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User not found", userId)
         user.updateProfile(request.nickname)
 
-        return userRepository.save(user).toDto()
+        return DtoConverter.convertToUserDto(userRepository.save(user))
     }
 
     @Transactional

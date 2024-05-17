@@ -1,7 +1,6 @@
 package org.example.todolistserverchapter3.api.v1.domain.user.model
 
 import jakarta.persistence.*
-import org.example.todolistserverchapter3.api.v1.domain.user.dto.UserDto
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import java.time.LocalDateTime
@@ -40,13 +39,4 @@ class User(
     fun updateProfile(nickname: String) {
         this.profile = Profile(nickname = nickname)
     }
-}
-
-fun User.toDto(): UserDto {
-    return UserDto(
-        id = this.id!!,
-        nickname = this.profile.nickname,
-        email = this.email,
-        role = this.role.name,
-    )
 }

@@ -1,10 +1,11 @@
 package org.example.todolistserverchapter3.api.v1.domain.todo.model
 
 import jakarta.persistence.*
-import jakarta.persistence.Table
-import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoDto
 import org.example.todolistserverchapter3.api.v1.domain.user.model.User
-import org.hibernate.annotations.*
+import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.SQLDelete
+import org.hibernate.annotations.SQLRestriction
+import org.hibernate.annotations.UpdateTimestamp
 import java.time.LocalDateTime
 
 @Entity
@@ -48,17 +49,4 @@ class Todo(
     fun isOwner(user: User): Boolean {
         return this.user == user
     }
-}
-
-fun Todo.toDto(): TodoDto {
-    return TodoDto(
-        id = this.id!!,
-        userId = this.user.id!!,
-        userName = this.user.profile.nickname,
-        title = this.title,
-        description = this.description,
-        status = this.status.name,
-        cardStatus = this.cardStatus.name,
-        createdAt = this.createdAt.toString()
-    )
 }

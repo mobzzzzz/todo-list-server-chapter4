@@ -2,7 +2,6 @@ package org.example.todolistserverchapter3.api.v1.domain.comment.model
 
 import jakarta.persistence.*
 import jakarta.persistence.Table
-import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.model.Todo
 import org.example.todolistserverchapter3.api.v1.domain.user.model.User
 import org.hibernate.annotations.*
@@ -59,16 +58,4 @@ class Comment(
     }
 
     fun getUserName() = this.user?.profile?.nickname ?: this.name ?: ""
-}
-
-fun Comment.toDto(): CommentDto {
-    return CommentDto(
-        id = this.id!!,
-        todoId = this.todo.id!!,
-        userId = this.user?.id,
-        content = this.content,
-        name = this.getUserName(),
-        status = this.status.name,
-        createdAt = this.createdAt.toString(),
-    )
 }

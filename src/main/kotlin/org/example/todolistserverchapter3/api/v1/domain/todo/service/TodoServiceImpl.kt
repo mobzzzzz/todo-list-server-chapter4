@@ -1,16 +1,16 @@
 package org.example.todolistserverchapter3.api.v1.domain.todo.service
 
-import org.example.todolistserverchapter3.api.v1.exception.ModelNotFoundException
 import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoCreateDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoUpdateCardStatusDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoUpdateDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.model.Todo
 import org.example.todolistserverchapter3.api.v1.domain.todo.model.TodoCardStatus
-import org.example.todolistserverchapter3.api.v1.domain.todo.model.toDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.query.TodoSort
 import org.example.todolistserverchapter3.api.v1.domain.todo.repository.TodoRepository
 import org.example.todolistserverchapter3.api.v1.domain.user.repository.UserRepository
+import org.example.todolistserverchapter3.api.v1.exception.ModelNotFoundException
+import org.example.todolistserverchapter3.api.v1.util.DtoConverter
 import org.springframework.data.domain.Sort
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -32,11 +32,13 @@ class TodoServiceImpl(
             )
         )
 
-        return todos.map { it.toDto() }
+        return todos.map { DtoConverter.convertToTodoDto(it) }
     }
 
     override fun getTodo(todoId: Long): TodoDto {
-        return todoRepository.findByIdOrNull(todoId)?.toDto() ?: throw ModelNotFoundException("Todo not found", todoId)
+        val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
+
+        return DtoConverter.convertToTodoDto(todo)
     }
 
     @Transactional
@@ -45,13 +47,15 @@ class TodoServiceImpl(
             "User not found",
             request.userId
         )
-        return todoRepository.save(
-            Todo(
-                title = request.title,
-                description = request.description,
-                user = user
+        return DtoConverter.convertToTodoDto(
+            todoRepository.save(
+                Todo(
+                    title = request.title,
+                    description = request.description,
+                    user = user
+                ),
             )
-        ).toDto()
+        )
     }
 
     @Transactional
@@ -62,7 +66,7 @@ class TodoServiceImpl(
         todo.title = title
         todo.description = description
 
-        return todoRepository.save(todo).toDto()
+        return DtoConverter.convertToTodoDto(todoRepository.save(todo))
     }
 
     @Transactional
@@ -76,7 +80,7 @@ class TodoServiceImpl(
             else -> throw IllegalStateException("Invalid card status ${request.status}")
         }
 
-        return todoRepository.save(todo).toDto()
+        return DtoConverter.convertToTodoDto(todoRepository.save(todo))
     }
 
     @Transactional

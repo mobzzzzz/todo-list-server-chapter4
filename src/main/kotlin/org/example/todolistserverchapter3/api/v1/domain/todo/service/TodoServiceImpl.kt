@@ -23,12 +23,7 @@ class TodoServiceImpl(
     val userRepository: UserRepository,
     val commentRepository: CommentRepository
 ) : TodoService {
-    /**
-     * 댓글을 제외한 할 일 카드 목록을 불러옵니다.
-     *
-     * @param sort: 생성일 오름/내림차순
-     * @return 할 일 카드 목록
-     */
+
     override fun getTodoList(sort: TodoSort): List<TodoDto> {
         val todos = todoRepository.findAll(
             Sort.by(
@@ -43,12 +38,6 @@ class TodoServiceImpl(
         return todos.map { DtoConverter.convertToTodoDto(it) }
     }
 
-    /**
-     * 댓글을 포함하여 할 일 카드 정보를 조회합니다.
-     *
-     * @param todoId: 조회할 할 일 카드 ID
-     * @return 댓글 목록을 포함한 할 일 카드 정보
-     */
     override fun getTodo(todoId: Long): TodoDto {
         val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
         val comments = commentRepository.findAllByTodoIdOrderByCreatedAtAsc(todoId)
@@ -56,12 +45,6 @@ class TodoServiceImpl(
         return DtoConverter.convertToTodoDto(todo, comments)
     }
 
-    /**
-     * 할 일 카드를 생성해 저장합니다.
-     *
-     * @param 생성할 할 일 카드 정보
-     * @return 생성된 할 일 카드 정보
-     */
     @Transactional
     override fun createTodo(request: TodoCreateDto): TodoDto {
         val user = userRepository.findByIdOrNull(request.userId) ?: throw ModelNotFoundException(
@@ -79,13 +62,6 @@ class TodoServiceImpl(
         )
     }
 
-    /**
-     * 할 일 카드 정보를 수정합니다.
-     *
-     * @param 할 일 카드 ID
-     * @param 수정할 할 일 카드 정보
-     * @return 수정된 할 일 카드 정보
-     */
     @Transactional
     override fun updateTodo(todoId: Long, request: TodoUpdateDto): TodoDto {
         val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
@@ -97,13 +73,6 @@ class TodoServiceImpl(
         return DtoConverter.convertToTodoDto(todoRepository.save(todo))
     }
 
-    /**
-     * 할 일 카드의 진행 상태를 수정합니다.
-     *
-     * @param 할 일 카드 ID
-     * @param 수정할 할 일 카드 진행 상태
-     * @return 수정된 할 일 카드 정보
-     */
     @Transactional
     override fun updateTodoCardStatus(todoId: Long, request: TodoUpdateCardStatusDto): TodoDto {
         val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
@@ -118,11 +87,6 @@ class TodoServiceImpl(
         return DtoConverter.convertToTodoDto(todoRepository.save(todo))
     }
 
-    /**
-     * 할 일 카드를 삭제합니다.
-     *
-     * @param 할 일 카드 ID
-     */
     @Transactional
     override fun deleteTodo(todoId: Long) {
         val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)

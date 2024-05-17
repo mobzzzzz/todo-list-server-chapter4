@@ -21,6 +21,7 @@ class CommentServiceImpl(
     private val todoRepository: TodoRepository,
     private val userRepository: UserRepository
 ) : CommentService {
+
     override fun getCommentList(todoId: Long, sort: CommentSort): List<CommentDto> {
         return when (sort) {
             CommentSort.CreatedAtAsc -> commentRepository.findAllByTodoIdOrderByCreatedAtAsc(todoId)

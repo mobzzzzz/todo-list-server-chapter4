@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional
 class UserServiceImpl(
     private val userRepository: UserRepository
 ) : UserService {
+
     @Transactional
     override fun signUp(request: SignUpDto): UserDto {
         val user = User(

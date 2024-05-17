@@ -21,11 +21,13 @@ TODO List API 서버
 
 </details>
 
-## 요약
+## 일부 요약
 ![api_spec_summary.png](api_spec_summary.png)
 
 
 # [ERD Cloud](https://www.erdcloud.com/d/8JmKdknxC3JsBpzEe)
+
+## 요약
 
 ![erd_cloud.png](erd_cloud.png)
 
@@ -59,10 +61,8 @@ todolistserverchapter3
         └── infra
 ```
 
-- dto 패키지는 클라이언트-서버 API 통신에 필요한 데이터 전송 객체를 담고 있습니다.<br/> 
-  Service 에서 비즈니스 로직을 처리 후 Dto 로 반환합니다.
+- dto 패키지는 클라이언트-서버 API 통신에 필요한 데이터 전송 객체를 담고 있습니다.<br/>
 - model 패키지는 DB와 매핑되는 Entity 객체를 담고 있습니다.<br/>
-  Service의 요청에 맞춰 Repository에서 데이터를 가져와 Model 객체로 반환합니다.
 - controller 패키지는 클라이언트의 요청을 받아 처리하는 Rest API 컨트롤러를 담고 있습니다.
 - repository 패키지는 DB와 직접적으로 통신하는 JpaRepository 인터페이스를 담고 있습니다.
 - service 패키지는 비즈니스 로직을 처리하는 서비스 인터페이스와 구현체를 담고 있습니다.
@@ -72,9 +72,9 @@ todolistserverchapter3
 
 DDD 설계에 의거해 작성되었습니다.
 
-Controller: 클라이언트의 요청을 받아 DTO로 변환하고 비즈니스 로직을 수행할 적절한 Service에 요청을 보냅니다.
-Service: 필요한 데이터를 Repository에 요청하여 가져와 비즈니스 로직을 처리하고 요청에 맞는 Dto를 반환합니다.
-Repository: DB와 통신해 Entity를 관리하며 Service의 요청에 맞는 데이터를 가져와 반환합니다.
+- **Controller**: 클라이언트의 요청을 받아 DTO로 변환하고 비즈니스 로직을 수행할 적절한 Service에 요청을 보냅니다.
+- **Service**: 필요한 데이터를 Repository에 요청하여 가져와 비즈니스 로직을 처리하고 요청에 맞는 Dto를 반환합니다.
+- **Repository**: DB와 통신해 Entity를 관리하며 Service의 요청에 맞는 데이터를 가져와 반환합니다.
 
 ```plaintext
      Client
@@ -91,12 +91,12 @@ Repository: DB와 통신해 Entity를 관리하며 Service의 요청에 맞는 �
        |
        v
 +--------------+
-| Repository   |
+|  Repository  |
 +--------------+
        |
        v
 +--------------+
-|  Database    |
+|   Database   |
 +--------------+
 ```
 

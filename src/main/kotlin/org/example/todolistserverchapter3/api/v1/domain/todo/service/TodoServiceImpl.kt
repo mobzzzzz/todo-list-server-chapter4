@@ -1,6 +1,6 @@
 package org.example.todolistserverchapter3.api.v1.domain.todo.service
 
-import org.example.todolistserverchapter3.api.v1.domain.exception.ModelNotFoundException
+import org.example.todolistserverchapter3.api.v1.exception.ModelNotFoundException
 import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoCreateDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoUpdateCardStatusDto

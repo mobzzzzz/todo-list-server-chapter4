@@ -1,6 +1,6 @@
-package org.example.todolistserverchapter3.api.v1.domain.exception
+package org.example.todolistserverchapter3.api.v1.exception
 
-import org.example.todolistserverchapter3.api.v1.domain.exception.dto.ErrorDto
+import org.example.todolistserverchapter3.api.v1.exception.dto.ErrorDto
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler

@@ -1,4 +1,4 @@
-package org.example.todolistserverchapter3.api.v1.domain.exception.dto
+package org.example.todolistserverchapter3.api.v1.exception.dto
 
 data class ErrorDto(
     val message: String?,

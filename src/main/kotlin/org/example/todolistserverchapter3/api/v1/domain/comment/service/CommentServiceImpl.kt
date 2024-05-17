@@ -8,7 +8,7 @@ import org.example.todolistserverchapter3.api.v1.domain.comment.model.Comment
 import org.example.todolistserverchapter3.api.v1.domain.comment.model.toDto
 import org.example.todolistserverchapter3.api.v1.domain.comment.query.CommentSort
 import org.example.todolistserverchapter3.api.v1.domain.comment.repository.CommentRepository
-import org.example.todolistserverchapter3.api.v1.domain.exception.ModelNotFoundException
+import org.example.todolistserverchapter3.api.v1.exception.ModelNotFoundException
 import org.example.todolistserverchapter3.api.v1.domain.todo.repository.TodoRepository
 import org.example.todolistserverchapter3.api.v1.domain.user.repository.UserRepository
 import org.springframework.data.repository.findByIdOrNull

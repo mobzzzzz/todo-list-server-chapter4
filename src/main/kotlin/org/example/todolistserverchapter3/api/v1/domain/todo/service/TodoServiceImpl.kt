@@ -81,11 +81,10 @@ class TodoServiceImpl(
     override fun updateTodoCardStatus(todoId: Long, request: TodoUpdateCardStatusDto): TodoDto {
         val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
 
-        todo.cardStatus = when (request.status) {
-            TodoCardStatus.NotStarted.name -> TodoCardStatus.NotStarted
-            TodoCardStatus.InProgress.name -> TodoCardStatus.InProgress
-            TodoCardStatus.Completed.name -> TodoCardStatus.Completed
-            else -> throw IllegalStateException("Invalid card status ${request.status}")
+        try {
+            todo.cardStatus = TodoCardStatus.valueOf(request.status)
+        } catch (e: IllegalArgumentException) {
+            throw IllegalStateException("Invalid card status ${request.status}")
         }
 
         return DtoConverter.convertToTodoDto(todoRepository.save(todo))

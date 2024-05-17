@@ -106,6 +106,111 @@ DDD 설계에 의거해 작성되었습니다.
 - Todo 카드에 댓글 생성(익명 포함), 조회, 수정, 삭제
 - 유저 생성, 프로필 조회, 프로필 수정, 삭제
 
+<details><summary>Todo Controller 예시</summary>
+
+```kotlin
+@RestController
+@RequestMapping("/todos")
+class TodoController(
+    private val todoService: TodoService
+) : ApiV1MappingConfig() {
+
+    @GetMapping
+    fun getTodoList(@RequestParam(defaultValue = "created_at_asc") sort: TodoSort): ResponseEntity<List<TodoDto>> {
+        return ResponseEntity.status(HttpStatus.OK).body(todoService.getTodoList(sort))
+    }
+
+    /*...*/
+
+    @PostMapping
+    fun createTodo(@RequestBody request: TodoCreateDto): ResponseEntity<TodoDto> {
+        return ResponseEntity.status(HttpStatus.CREATED).body(todoService.createTodo(request))
+    }
+
+    /*...*/
+}
+```
+</details>
+<br/>
+<details><summary>Todo Service 예시</summary>
+
+```kotlin
+@Service
+class TodoServiceImpl(
+    val todoRepository: TodoRepository,
+    val userRepository: UserRepository,
+) : TodoService {
+    override fun getTodoList(sort: TodoSort): List<TodoDto> {
+        val todos = todoRepository.findAll(
+            Sort.by(
+                when (sort) {
+                    TodoSort.CreatedAtDesc -> Sort.Direction.DESC
+                    TodoSort.CreatedAtAsc -> Sort.Direction.ASC
+                },
+                "created_at"
+            )
+        )
+
+        return todos.map { it.toDto() }
+    }
+    
+    /*...*/
+
+    @Transactional
+    override fun createTodo(request: TodoCreateDto): TodoDto {
+        val user = userRepository.findByIdOrNull(request.userId) ?: throw ModelNotFoundException(
+            "User not found",
+            request.userId
+        )
+        return todoRepository.save(
+            Todo(
+                title = request.title,
+                description = request.description,
+                user = user
+            )
+        ).toDto()
+    }
+    
+    /*...*/
+}
+```
+</details>
+
+<br/>
+
+<details><summary>Todo Entity 예시</summary>
+
+```kotlin
+@Entity
+@Table(name = "todo")
+@SQLRestriction("status != 'Deleted'")
+@SQLDelete(sql = "UPDATE todo SET status = 'Deleted', deleted_at = NOW() WHERE id = ?")
+class Todo(
+    /*...*/
+    @Enumerated(EnumType.STRING)
+    @Column(name = "card_status")
+    var cardStatus: TodoCardStatus = TodoCardStatus.NotStarted,
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    val createdAt: LocalDateTime = LocalDateTime.now(),
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    var updatedAt: LocalDateTime? = null,
+
+    @Column(name = "deleted_at")
+    var deletedAt: LocalDateTime? = null,
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    val user: User
+) 
+
+/*...*/
+```
+</details>
+
 # 개발 환경
 
 - 개발 언어: Kotlin 1.9.23, JDK 21

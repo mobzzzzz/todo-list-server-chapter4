@@ -6,7 +6,7 @@ import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentCreat
 import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentDto
 import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentUpdateDto
 import org.example.todolistserverchapter3.api.v1.domain.comment.query.CommentSort
-import org.example.todolistserverchapter3.api.v1.domain.comment.service.CommentService
+import org.example.todolistserverchapter3.api.v1.domain.todo.service.TodoService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -14,12 +14,12 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/todos/{todo_id}/comments")
 class CommentController(
-    val commentService: CommentService
+    val todoService: TodoService
 ) : ApiV1MappingConfig() {
 
     @GetMapping
     fun getCommentList(@PathVariable("todo_id") todoId: Long, @RequestParam(defaultValue = "created_at_asc") sort: CommentSort): ResponseEntity<List<CommentDto>> {
-        return ResponseEntity.status(HttpStatus.OK).body(commentService.getCommentList(todoId, sort))
+        return ResponseEntity.status(HttpStatus.OK).body(todoService.getCommentList(todoId, sort))
     }
 
     @GetMapping("/{comment_id}")
@@ -27,7 +27,7 @@ class CommentController(
         @PathVariable("todo_id") todoId: Long,
         @PathVariable("comment_id") commentId: Long
     ): ResponseEntity<CommentDto> {
-        return ResponseEntity.status(HttpStatus.OK).body(commentService.getComment(todoId, commentId))
+        return ResponseEntity.status(HttpStatus.OK).body(todoService.getComment(todoId, commentId))
     }
 
     @PostMapping
@@ -35,7 +35,7 @@ class CommentController(
         @PathVariable("todo_id") todoId: Long,
         @RequestBody request: CommentCreateWithUserDto
     ): ResponseEntity<CommentDto> {
-        return ResponseEntity.status(HttpStatus.CREATED).body(commentService.createComment(todoId, request))
+        return ResponseEntity.status(HttpStatus.CREATED).body(todoService.createComment(todoId, request))
     }
 
     @PostMapping("/anonymous")
@@ -43,7 +43,7 @@ class CommentController(
         @PathVariable("todo_id") todoId: Long,
         @RequestBody request: CommentCreateWithNamePasswordDto
     ): ResponseEntity<CommentDto> {
-        return ResponseEntity.status(HttpStatus.CREATED).body(commentService.createComment(todoId, request))
+        return ResponseEntity.status(HttpStatus.CREATED).body(todoService.createComment(todoId, request))
     }
 
     @PutMapping("/{comment_id}")
@@ -52,7 +52,7 @@ class CommentController(
         @PathVariable("comment_id") commentId: Long,
         @RequestBody request: CommentUpdateDto
     ): ResponseEntity<CommentDto> {
-        return ResponseEntity.status(HttpStatus.OK).body(commentService.updateComment(todoId, commentId, request))
+        return ResponseEntity.status(HttpStatus.OK).body(todoService.updateComment(todoId, commentId, request))
     }
 
     @DeleteMapping("/{comment_id}")
@@ -60,7 +60,7 @@ class CommentController(
         @PathVariable("todo_id") todoId: Long,
         @PathVariable("comment_id") commentId: Long
     ): ResponseEntity<Unit> {
-        commentService.deleteComment(todoId, commentId)
+        todoService.deleteComment(todoId, commentId)
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }

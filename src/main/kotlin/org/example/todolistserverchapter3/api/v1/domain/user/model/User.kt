@@ -41,13 +41,20 @@ class User(
         this.profile = profile
     }
 
+    private fun validate() {
+        require(email.isNotBlank()) { "Email cannot be blank" }
+        require(password.length in 8..20) { "Password must be between 8 and 20 characters" }
+        require(profile.nickname.isNotBlank()) { "Nickname cannot be blank" }
+        require(profile.nickname.length in 2..10) { "Nickname must be between 2 and 10 characters" }
+    }
+
     companion object {
-        fun createFrom(request: SignUpDto): User {
+        fun fromDto(request: SignUpDto): User {
             return User(
                 email = request.email,
                 password = request.password,
                 profile = Profile(request.nickname)
-            )
+            ).apply { this.validate() }
         }
     }
 }

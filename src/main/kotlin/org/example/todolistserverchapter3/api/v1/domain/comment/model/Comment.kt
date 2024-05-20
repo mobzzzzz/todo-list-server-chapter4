@@ -1,12 +1,14 @@
 package org.example.todolistserverchapter3.api.v1.domain.comment.model
 
 import jakarta.persistence.*
-import jakarta.persistence.Table
 import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentCreateWithNamePasswordDto
 import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentCreateWithUserDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.model.Todo
 import org.example.todolistserverchapter3.api.v1.domain.user.model.User
-import org.hibernate.annotations.*
+import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.SQLDelete
+import org.hibernate.annotations.SQLRestriction
+import org.hibernate.annotations.UpdateTimestamp
 import java.time.LocalDateTime
 
 @Entity
@@ -60,22 +62,27 @@ class Comment(
 
     fun getUserName() = this.user?.profile?.nickname ?: this.name ?: ""
 
+    private fun validate() {
+        require(this.content.isNotBlank()) { "Content must not be blank" }
+        require(this.content.length <= 100) { "Content must be 100 characters or less" }
+    }
+
     companion object {
-        fun createFrom(request: CommentCreateWithUserDto, todo: Todo, user: User?): Comment {
+        fun fromDto(request: CommentCreateWithUserDto, todo: Todo, user: User): Comment {
             return Comment(
                 content = request.content,
                 todo = todo,
                 user = user
-            )
+            ).apply { validate() }
         }
 
-        fun createFrom(request: CommentCreateWithNamePasswordDto, todo: Todo): Comment {
+        fun fromDto(request: CommentCreateWithNamePasswordDto, todo: Todo): Comment {
             return Comment(
                 content = request.content,
                 name = request.name,
                 password = request.password,
                 todo = todo
-            )
+            ).apply { validate() }
         }
     }
 }

@@ -51,13 +51,19 @@ class Todo(
         return this.user == user
     }
 
+    private fun validate() {
+        require(title.isNotBlank()) { "Title cannot be blank" }
+        require(title.length <= 100) { "Title must be 100 characters or less" }
+        require(this.description != null && this.description!!.length <= 1000) { "Description must be 1000 characters or less" }
+    }
+
     companion object {
-        fun createFrom(request: TodoCreateDto, user: User): Todo {
+        fun fromDto(request: TodoCreateDto, user: User): Todo {
             return Todo(
                 title = request.title,
                 description = request.description,
                 user = user
-            )
+            ).apply { this.validate() }
         }
     }
 }

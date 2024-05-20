@@ -20,7 +20,7 @@ class UserServiceImpl(
 
     @Transactional
     override fun signUp(request: SignUpDto): UserDto {
-        return DtoConverter.convertToUserDto(userRepository.save(User.createFrom(request)))
+        return DtoConverter.convertToUserDto(userRepository.save(User.fromDto(request)))
     }
 
     @Transactional

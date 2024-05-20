@@ -60,7 +60,7 @@ class TodoServiceImpl(
 
         return DtoConverter.convertToTodoDto(
             todoRepository.save(
-                Todo.createFrom(
+                Todo.fromDto(
                     request = request,
                     user = user
                 ),
@@ -128,7 +128,7 @@ class TodoServiceImpl(
 
         return DtoConverter.convertToCommentDto(
             commentRepository.save(
-                Comment.createFrom(
+                Comment.fromDto(
                     request = request,
                     todo = todo,
                     user = user,
@@ -143,7 +143,7 @@ class TodoServiceImpl(
 
         return DtoConverter.convertToCommentDto(
             commentRepository.save(
-                Comment.createFrom(
+                Comment.fromDto(
                     request = request,
                     todo = todo
                 )

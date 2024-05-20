@@ -1,5 +1,6 @@
 package org.example.todolistserverchapter3.api.v1.domain.user.controller
 
+import jakarta.validation.Valid
 import org.example.todolistserverchapter3.api.v1.domain.ApiV1MappingConfig
 import org.example.todolistserverchapter3.api.v1.domain.user.dto.UserDto
 import org.example.todolistserverchapter3.api.v1.domain.user.dto.SignInDto
@@ -8,20 +9,22 @@ import org.example.todolistserverchapter3.api.v1.domain.user.dto.UserUpdateProfi
 import org.example.todolistserverchapter3.api.v1.domain.user.service.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 
 @RestController
+@Validated
 class UserController(
     val userService: UserService
 ) : ApiV1MappingConfig() {
 
     @PostMapping("/signup")
-    fun signUp(@RequestBody request: SignUpDto): ResponseEntity<UserDto> {
+    fun signUp(@Valid @RequestBody request: SignUpDto): ResponseEntity<UserDto> {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.signUp(request))
     }
 
     @PostMapping("/signin")
-    fun signIn(@RequestBody request: SignInDto): ResponseEntity<UserDto> {
+    fun signIn(@Valid @RequestBody request: SignInDto): ResponseEntity<UserDto> {
         return ResponseEntity.status(HttpStatus.OK).body(userService.signIn(request))
     }
 
@@ -40,7 +43,7 @@ class UserController(
     @PutMapping("/users/{user_id}/profile")
     fun updateProfile(
         @PathVariable("user_id") userId: Long,
-        @RequestBody request: UserUpdateProfileDto
+        @Valid @RequestBody request: UserUpdateProfileDto
     ): ResponseEntity<UserDto> {
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUserProfile(userId, request))
     }

@@ -1,5 +1,6 @@
 package org.example.todolistserverchapter3.api.v1.domain.comment.controller
 
+import jakarta.validation.Valid
 import org.example.todolistserverchapter3.api.v1.domain.ApiV1MappingConfig
 import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentCreateWithNamePasswordDto
 import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentCreateWithUserDto
@@ -9,16 +10,21 @@ import org.example.todolistserverchapter3.api.v1.domain.comment.query.CommentSor
 import org.example.todolistserverchapter3.api.v1.domain.todo.service.TodoService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/todos/{todo_id}/comments")
+@Validated
 class CommentController(
     val todoService: TodoService
 ) : ApiV1MappingConfig() {
 
     @GetMapping
-    fun getCommentList(@PathVariable("todo_id") todoId: Long, @RequestParam(defaultValue = "created_at_asc") sort: CommentSort): ResponseEntity<List<CommentDto>> {
+    fun getCommentList(
+        @PathVariable("todo_id") todoId: Long,
+        @RequestParam(defaultValue = "created_at_asc") sort: CommentSort
+    ): ResponseEntity<List<CommentDto>> {
         return ResponseEntity.status(HttpStatus.OK).body(todoService.getCommentList(todoId, sort))
     }
 
@@ -33,7 +39,7 @@ class CommentController(
     @PostMapping
     fun createComment(
         @PathVariable("todo_id") todoId: Long,
-        @RequestBody request: CommentCreateWithUserDto
+        @Valid @RequestBody request: CommentCreateWithUserDto
     ): ResponseEntity<CommentDto> {
         return ResponseEntity.status(HttpStatus.CREATED).body(todoService.createComment(todoId, request))
     }
@@ -41,7 +47,7 @@ class CommentController(
     @PostMapping("/anonymous")
     fun createComment(
         @PathVariable("todo_id") todoId: Long,
-        @RequestBody request: CommentCreateWithNamePasswordDto
+        @Valid @RequestBody request: CommentCreateWithNamePasswordDto
     ): ResponseEntity<CommentDto> {
         return ResponseEntity.status(HttpStatus.CREATED).body(todoService.createComment(todoId, request))
     }
@@ -50,7 +56,7 @@ class CommentController(
     fun updateComment(
         @PathVariable("todo_id") todoId: Long,
         @PathVariable("comment_id") commentId: Long,
-        @RequestBody request: CommentUpdateDto
+        @Valid @RequestBody request: CommentUpdateDto
     ): ResponseEntity<CommentDto> {
         return ResponseEntity.status(HttpStatus.OK).body(todoService.updateComment(todoId, commentId, request))
     }

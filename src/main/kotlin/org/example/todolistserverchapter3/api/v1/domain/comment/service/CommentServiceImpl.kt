@@ -48,8 +48,8 @@ class CommentServiceImpl(
 
         return DtoConverter.convertToCommentDto(
             commentRepository.save(
-                Comment(
-                    content = request.content,
+                Comment.createFrom(
+                    request = request,
                     todo = todo,
                     user = user,
                 )
@@ -63,11 +63,9 @@ class CommentServiceImpl(
 
         return DtoConverter.convertToCommentDto(
             commentRepository.save(
-                Comment(
-                    content = request.content,
-                    todo = todo,
-                    name = request.name,
-                    password = request.password
+                Comment.createFrom(
+                    request = request,
+                    todo = todo
                 )
             )
         )

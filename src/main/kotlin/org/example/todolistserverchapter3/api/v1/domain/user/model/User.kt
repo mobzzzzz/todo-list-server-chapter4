@@ -1,6 +1,7 @@
 package org.example.todolistserverchapter3.api.v1.domain.user.model
 
 import jakarta.persistence.*
+import org.example.todolistserverchapter3.api.v1.domain.user.dto.SignUpDto
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import java.time.LocalDateTime
@@ -36,7 +37,17 @@ class User(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
 
-    fun updateProfile(nickname: String) {
-        this.profile = Profile(nickname = nickname)
+    fun updateProfile(profile: Profile) {
+        this.profile = profile
+    }
+
+    companion object {
+        fun createFrom(request: SignUpDto): User {
+            return User(
+                email = request.email,
+                password = request.password,
+                profile = Profile(request.nickname)
+            )
+        }
     }
 }

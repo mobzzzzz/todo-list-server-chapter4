@@ -1,6 +1,7 @@
 package org.example.todolistserverchapter3.api.v1.domain.todo.model
 
 import jakarta.persistence.*
+import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoCreateDto
 import org.example.todolistserverchapter3.api.v1.domain.user.model.User
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.SQLDelete
@@ -48,5 +49,15 @@ class Todo(
 
     fun isOwner(user: User): Boolean {
         return this.user == user
+    }
+
+    companion object {
+        fun createFrom(request: TodoCreateDto, user: User): Todo {
+            return Todo(
+                title = request.title,
+                description = request.description,
+                user = user
+            )
+        }
     }
 }

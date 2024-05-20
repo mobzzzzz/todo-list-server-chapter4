@@ -20,13 +20,7 @@ class UserServiceImpl(
 
     @Transactional
     override fun signUp(request: SignUpDto): UserDto {
-        val user = User(
-            email = request.email,
-            password = request.password,
-            profile = Profile(request.nickname)
-        )
-
-        return DtoConverter.convertToUserDto(userRepository.save(user))
+        return DtoConverter.convertToUserDto(userRepository.save(User.createFrom(request)))
     }
 
     @Transactional
@@ -51,7 +45,7 @@ class UserServiceImpl(
     @Transactional
     override fun updateUserProfile(userId: Long, request: UserUpdateProfileDto): UserDto {
         val user = userRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User not found", userId)
-        user.updateProfile(request.nickname)
+        user.updateProfile(Profile(nickname = request.nickname))
 
         return DtoConverter.convertToUserDto(userRepository.save(user))
     }

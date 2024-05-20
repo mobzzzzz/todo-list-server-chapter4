@@ -52,13 +52,10 @@ class TodoServiceImpl(
             request.userId
         )
 
-        val (title, description) = request
-
         return DtoConverter.convertToTodoDto(
             todoRepository.save(
-                Todo(
-                    title = title,
-                    description = description,
+                Todo.createFrom(
+                    request = request,
                     user = user
                 ),
             )

@@ -2,6 +2,8 @@ package org.example.todolistserverchapter3.api.v1.domain.comment.model
 
 import jakarta.persistence.*
 import jakarta.persistence.Table
+import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentCreateWithNamePasswordDto
+import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentCreateWithUserDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.model.Todo
 import org.example.todolistserverchapter3.api.v1.domain.user.model.User
 import org.hibernate.annotations.*
@@ -58,4 +60,23 @@ class Comment(
     }
 
     fun getUserName() = this.user?.profile?.nickname ?: this.name ?: ""
+
+    companion object {
+        fun createFrom(request: CommentCreateWithUserDto, todo: Todo, user: User?): Comment {
+            return Comment(
+                content = request.content,
+                todo = todo,
+                user = user
+            )
+        }
+
+        fun createFrom(request: CommentCreateWithNamePasswordDto, todo: Todo): Comment {
+            return Comment(
+                content = request.content,
+                name = request.name,
+                password = request.password,
+                todo = todo
+            )
+        }
+    }
 }

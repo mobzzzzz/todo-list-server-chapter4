@@ -40,7 +40,6 @@ class Comment(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "todo_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
     val todo: Todo,
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -96,7 +96,9 @@ class TodoServiceImpl(
     @Transactional
     override fun deleteTodo(todoId: Long) {
         val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
+        val comments = commentRepository.findByTodoId(todoId)
 
+        commentRepository.deleteAll(comments)
         todoRepository.delete(todo)
     }
 

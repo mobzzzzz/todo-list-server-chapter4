@@ -28,9 +28,9 @@ class TodoServiceImpl(
     val commentRepository: CommentRepository
 ) : TodoService {
 
-    override fun getTodoList(sort: Sort, userId: Long?): List<TodoDto> {
-        val todos = if (userId != null) {
-            todoRepository.findByUserId(userId, sort)
+    override fun getTodoList(sort: Sort, userIds: List<Long>?): List<TodoDto> {
+        val todos = if (userIds != null) {
+            todoRepository.findByUserIdIn(userIds, sort)
         } else {
             todoRepository.findAll(sort)
         }

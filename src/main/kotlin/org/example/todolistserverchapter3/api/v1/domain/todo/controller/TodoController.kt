@@ -24,9 +24,9 @@ class TodoController(
     @GetMapping
     fun getTodoList(
         @RequestParam(defaultValue = "created_at_asc") sort: TodoSort,
-        @RequestParam(required = false) userId: Long? = null,
+        @RequestParam(required = false) userIds: List<Long>? = null,
     ): ResponseEntity<List<TodoDto>> {
-        return ResponseEntity.status(HttpStatus.OK).body(todoService.getTodoList(sort.convertToSort(), userId))
+        return ResponseEntity.status(HttpStatus.OK).body(todoService.getTodoList(sort.convertToSort(), userIds))
     }
 
     @GetMapping("/{todo_id}")

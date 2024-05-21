@@ -5,5 +5,5 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface TodoRepository : JpaRepository<Todo, Long> {
-    fun findByUserId(userId: Long, sort: Sort = Sort.by("created_at").ascending()): List<Todo>
+    fun findByUserIdIn(userIds: List<Long>, sort: Sort = Sort.by("created_at").ascending()): List<Todo>
 }

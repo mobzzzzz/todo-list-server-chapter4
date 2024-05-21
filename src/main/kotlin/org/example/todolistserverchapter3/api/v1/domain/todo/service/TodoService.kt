@@ -4,9 +4,8 @@ import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentCreat
 import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentCreateWithUserDto
 import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentDto
 import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentUpdateDto
-import org.example.todolistserverchapter3.api.v1.domain.comment.query.CommentSort
 import org.example.todolistserverchapter3.api.v1.domain.todo.dto.*
-import org.example.todolistserverchapter3.api.v1.domain.todo.query.TodoSort
+import org.springframework.data.domain.Sort
 
 interface TodoService {
     /**
@@ -16,7 +15,7 @@ interface TodoService {
      * @param userId: 필터시 필터링 할 유저 ID
      * @return 할 일 카드 목록
      */
-    fun getTodoList(sort: TodoSort, userId: Long? = null): List<TodoDto>
+    fun getTodoList(sort: Sort, userId: Long? = null): List<TodoDto>
 
     /**
      * 댓글을 포함하여 할 일 카드 정보를 조회합니다.
@@ -66,7 +65,7 @@ interface TodoService {
      * @param sort: 생성일 오름/내림차순
      * @return 댓글 목록
      */
-    fun getCommentList(todoId: Long, sort: CommentSort): List<CommentDto>
+    fun getCommentList(todoId: Long, sort: Sort): List<CommentDto>
 
     /**
      * 단일 댓글을 조회합니다.

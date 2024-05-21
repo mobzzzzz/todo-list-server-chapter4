@@ -5,7 +5,6 @@ import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentCreat
 import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentDto
 import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentUpdateDto
 import org.example.todolistserverchapter3.api.v1.domain.comment.model.Comment
-import org.example.todolistserverchapter3.api.v1.domain.comment.query.CommentSort
 import org.example.todolistserverchapter3.api.v1.domain.comment.repository.CommentRepository
 import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoCreateDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoDto
@@ -13,7 +12,6 @@ import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoUpdateCardS
 import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoUpdateDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.model.Todo
 import org.example.todolistserverchapter3.api.v1.domain.todo.model.TodoCardStatus
-import org.example.todolistserverchapter3.api.v1.domain.todo.query.TodoSort
 import org.example.todolistserverchapter3.api.v1.domain.todo.repository.TodoRepository
 import org.example.todolistserverchapter3.api.v1.domain.user.repository.UserRepository
 import org.example.todolistserverchapter3.api.v1.exception.ModelNotFoundException
@@ -30,19 +28,11 @@ class TodoServiceImpl(
     val commentRepository: CommentRepository
 ) : TodoService {
 
-    override fun getTodoList(sort: TodoSort, userId: Long?): List<TodoDto> {
+    override fun getTodoList(sort: Sort, userId: Long?): List<TodoDto> {
         val todos = if (userId != null) {
-            todoRepository.findAllByUserIdOrderByCreatedAtAsc(userId)
+            todoRepository.findByUserId(userId, sort)
         } else {
-            todoRepository.findAll(
-                Sort.by(
-                    when (sort) {
-                        TodoSort.CreatedAtDesc -> Sort.Direction.DESC
-                        TodoSort.CreatedAtAsc -> Sort.Direction.ASC
-                    },
-                    "created_at"
-                )
-            )
+            todoRepository.findAll(sort)
         }
 
         return todos.map { DtoConverter.convertToTodoDto(it) }
@@ -50,7 +40,7 @@ class TodoServiceImpl(
 
     override fun getTodo(todoId: Long): TodoDto {
         val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
-        val comments = commentRepository.findAllByTodoIdOrderByCreatedAtAsc(todoId)
+        val comments = commentRepository.findByTodoId(todoId)
 
         return DtoConverter.convertToTodoDto(todo, comments)
     }
@@ -106,11 +96,8 @@ class TodoServiceImpl(
         todoRepository.delete(todo)
     }
 
-    override fun getCommentList(todoId: Long, sort: CommentSort): List<CommentDto> {
-        return when (sort) {
-            CommentSort.CreatedAtAsc -> commentRepository.findAllByTodoIdOrderByCreatedAtAsc(todoId)
-            CommentSort.CreatedAtDesc -> commentRepository.findAllByTodoIdOrderByCreatedAtDesc(todoId)
-        }.map { DtoConverter.convertToCommentDto(it) }
+    override fun getCommentList(todoId: Long, sort: Sort): List<CommentDto> {
+        return commentRepository.findByTodoId(todoId, sort).map { DtoConverter.convertToCommentDto(it) }
     }
 
     override fun getComment(todoId: Long, commentId: Long): CommentDto {

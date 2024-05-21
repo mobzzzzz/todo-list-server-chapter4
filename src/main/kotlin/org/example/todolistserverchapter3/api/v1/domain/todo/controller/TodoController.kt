@@ -2,8 +2,12 @@ package org.example.todolistserverchapter3.api.v1.domain.todo.controller
 
 import jakarta.validation.Valid
 import org.example.todolistserverchapter3.api.v1.domain.ApiV1MappingConfig
-import org.example.todolistserverchapter3.api.v1.domain.todo.dto.*
+import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoCreateDto
+import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoDto
+import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoUpdateCardStatusDto
+import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoUpdateDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.query.TodoSort
+import org.example.todolistserverchapter3.api.v1.domain.todo.query.convertToSort
 import org.example.todolistserverchapter3.api.v1.domain.todo.service.TodoService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -22,7 +26,7 @@ class TodoController(
         @RequestParam(defaultValue = "created_at_asc") sort: TodoSort,
         @RequestParam(required = false) userId: Long? = null,
     ): ResponseEntity<List<TodoDto>> {
-        return ResponseEntity.status(HttpStatus.OK).body(todoService.getTodoList(sort, userId))
+        return ResponseEntity.status(HttpStatus.OK).body(todoService.getTodoList(sort.convertToSort(), userId))
     }
 
     @GetMapping("/{todo_id}")

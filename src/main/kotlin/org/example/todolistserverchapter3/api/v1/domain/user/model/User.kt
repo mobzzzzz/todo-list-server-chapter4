@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 @Entity
 @Table(name = "app_user")
 class User(
-    @Column(name = "email")
+    @Column(unique = true, name = "email")
     var email: String,
 
     @Column(name = "password")

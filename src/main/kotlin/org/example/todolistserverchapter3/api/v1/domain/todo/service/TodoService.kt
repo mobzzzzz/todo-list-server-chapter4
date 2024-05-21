@@ -13,9 +13,10 @@ interface TodoService {
      * 댓글을 제외한 할 일 카드 목록을 불러옵니다.
      *
      * @param sort: 생성일 오름/내림차순
+     * @param userId: 필터시 필터링 할 유저 ID
      * @return 할 일 카드 목록
      */
-    fun getTodoList(sort: TodoSort): List<TodoDto>
+    fun getTodoList(sort: TodoSort, userId: Long? = null): List<TodoDto>
 
     /**
      * 댓글을 포함하여 할 일 카드 정보를 조회합니다.

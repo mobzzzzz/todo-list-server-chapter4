@@ -30,16 +30,20 @@ class TodoServiceImpl(
     val commentRepository: CommentRepository
 ) : TodoService {
 
-    override fun getTodoList(sort: TodoSort): List<TodoDto> {
-        val todos = todoRepository.findAll(
-            Sort.by(
-                when (sort) {
-                    TodoSort.CreatedAtDesc -> Sort.Direction.DESC
-                    TodoSort.CreatedAtAsc -> Sort.Direction.ASC
-                },
-                "created_at"
+    override fun getTodoList(sort: TodoSort, userId: Long?): List<TodoDto> {
+        val todos = if (userId != null) {
+            todoRepository.findAllByUserIdOrderByCreatedAtAsc(userId)
+        } else {
+            todoRepository.findAll(
+                Sort.by(
+                    when (sort) {
+                        TodoSort.CreatedAtDesc -> Sort.Direction.DESC
+                        TodoSort.CreatedAtAsc -> Sort.Direction.ASC
+                    },
+                    "created_at"
+                )
             )
-        )
+        }
 
         return todos.map { DtoConverter.convertToTodoDto(it) }
     }

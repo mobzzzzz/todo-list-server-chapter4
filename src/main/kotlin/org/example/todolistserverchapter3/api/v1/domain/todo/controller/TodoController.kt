@@ -18,8 +18,11 @@ class TodoController(
 ) : ApiV1MappingConfig() {
 
     @GetMapping
-    fun getTodoList(@RequestParam(defaultValue = "created_at_asc") sort: TodoSort): ResponseEntity<List<TodoDto>> {
-        return ResponseEntity.status(HttpStatus.OK).body(todoService.getTodoList(sort))
+    fun getTodoList(
+        @RequestParam(defaultValue = "created_at_asc") sort: TodoSort,
+        @RequestParam(required = false) userId: Long? = null,
+    ): ResponseEntity<List<TodoDto>> {
+        return ResponseEntity.status(HttpStatus.OK).body(todoService.getTodoList(sort, userId))
     }
 
     @GetMapping("/{todo_id}")

@@ -9,6 +9,9 @@ import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentUpdat
 import org.example.todolistserverchapter3.api.v1.domain.comment.query.CommentSort
 import org.example.todolistserverchapter3.api.v1.domain.comment.query.convertToSort
 import org.example.todolistserverchapter3.api.v1.domain.todo.service.TodoService
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
@@ -24,9 +27,13 @@ class CommentController(
     @GetMapping
     fun getCommentList(
         @PathVariable("todo_id") todoId: Long,
-        @RequestParam(defaultValue = "created_at_asc") sort: CommentSort
-    ): ResponseEntity<List<CommentDto>> {
-        return ResponseEntity.status(HttpStatus.OK).body(todoService.getCommentList(todoId, sort.convertToSort()))
+        @RequestParam(defaultValue = "created_at_asc") sort: CommentSort,
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "10") size: Int,
+    ): ResponseEntity<Page<CommentDto>> {
+        val pageable: Pageable = PageRequest.of(page, size, sort.convertToSort())
+
+        return ResponseEntity.status(HttpStatus.OK).body(todoService.getCommentList(todoId, pageable))
     }
 
     @GetMapping("/{comment_id}")

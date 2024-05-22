@@ -5,17 +5,18 @@ import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentCreat
 import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentDto
 import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentUpdateDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.dto.*
-import org.springframework.data.domain.Sort
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 
 interface TodoService {
     /**
      * 댓글을 제외한 할 일 카드 목록을 불러옵니다.
      *
-     * @param sort: 생성일 오름/내림차순
      * @param userIds: 필터시 필터링 할 유저 ID 목록
+     * @param pageable: 페이지, 정렬 정보
      * @return 할 일 카드 목록
      */
-    fun getTodoList(sort: Sort, userIds: List<Long>? = null): List<TodoDto>
+    fun getTodoList(userIds: List<Long>? = null, pageable: Pageable): Page<TodoDto>
 
     /**
      * 댓글을 포함하여 할 일 카드 정보를 조회합니다.
@@ -62,10 +63,10 @@ interface TodoService {
      * 댓글 목록을 조회합니다.
      *
      * @param todoId: 할 일 카드 ID
-     * @param sort: 생성일 오름/내림차순
+     * @param pageable: 페이지, 정렬 정보
      * @return 댓글 목록
      */
-    fun getCommentList(todoId: Long, sort: Sort): List<CommentDto>
+    fun getCommentList(todoId: Long, pageable: Pageable): Page<CommentDto>
 
     /**
      * 단일 댓글을 조회합니다.

@@ -9,6 +9,9 @@ import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoUpdateDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.query.TodoSort
 import org.example.todolistserverchapter3.api.v1.domain.todo.query.convertToSort
 import org.example.todolistserverchapter3.api.v1.domain.todo.service.TodoService
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
@@ -24,9 +27,13 @@ class TodoController(
     @GetMapping
     fun getTodoList(
         @RequestParam(defaultValue = "created_at_asc") sort: TodoSort,
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "10") size: Int,
         @RequestParam(required = false) userIds: List<Long>? = null,
-    ): ResponseEntity<List<TodoDto>> {
-        return ResponseEntity.status(HttpStatus.OK).body(todoService.getTodoList(sort.convertToSort(), userIds))
+    ): ResponseEntity<Page<TodoDto>> {
+        val pageable: Pageable = PageRequest.of(page, size, sort.convertToSort())
+
+        return ResponseEntity.status(HttpStatus.OK).body(todoService.getTodoList(userIds, pageable))
     }
 
     @GetMapping("/{todo_id}")

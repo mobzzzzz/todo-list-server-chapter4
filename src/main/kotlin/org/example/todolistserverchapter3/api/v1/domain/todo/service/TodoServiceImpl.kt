@@ -16,7 +16,8 @@ import org.example.todolistserverchapter3.api.v1.domain.todo.repository.TodoRepo
 import org.example.todolistserverchapter3.api.v1.domain.user.repository.UserRepository
 import org.example.todolistserverchapter3.api.v1.exception.ModelNotFoundException
 import org.example.todolistserverchapter3.api.v1.util.DtoConverter
-import org.springframework.data.domain.Sort
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -24,15 +25,15 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class TodoServiceImpl(
     val todoRepository: TodoRepository,
+    val commentRepository: CommentRepository,
     val userRepository: UserRepository,
-    val commentRepository: CommentRepository
 ) : TodoService {
 
-    override fun getTodoList(sort: Sort, userIds: List<Long>?): List<TodoDto> {
+    override fun getTodoList(userIds: List<Long>?, pageable: Pageable): Page<TodoDto> {
         val todos = if (userIds != null) {
-            todoRepository.findByUserIdIn(userIds, sort)
+            todoRepository.findByUserIdIn(userIds, pageable)
         } else {
-            todoRepository.findAll(sort)
+            todoRepository.findAll(pageable)
         }
 
         return todos.map { DtoConverter.convertToTodoDto(it) }
@@ -42,7 +43,7 @@ class TodoServiceImpl(
         val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
         val comments = commentRepository.findByTodoId(todoId)
 
-        return DtoConverter.convertToTodoDto(todo, comments)
+        return DtoConverter.convertToTodoDto(todo, comments.content)
     }
 
     @Transactional
@@ -96,8 +97,8 @@ class TodoServiceImpl(
         todoRepository.delete(todo)
     }
 
-    override fun getCommentList(todoId: Long, sort: Sort): List<CommentDto> {
-        return commentRepository.findByTodoId(todoId, sort).map { DtoConverter.convertToCommentDto(it) }
+    override fun getCommentList(todoId: Long, pageable: Pageable): Page<CommentDto> {
+        return commentRepository.findByTodoId(todoId, pageable).map { DtoConverter.convertToCommentDto(it) }
     }
 
     override fun getComment(todoId: Long, commentId: Long): CommentDto {

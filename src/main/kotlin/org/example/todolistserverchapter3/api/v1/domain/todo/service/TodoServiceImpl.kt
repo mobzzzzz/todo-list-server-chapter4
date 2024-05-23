@@ -12,6 +12,7 @@ import org.example.todolistserverchapter3.api.v1.domain.todo.model.status.TodoCa
 import org.example.todolistserverchapter3.api.v1.domain.todo.repository.TodoRepository
 import org.example.todolistserverchapter3.api.v1.domain.user.service.UserService
 import org.example.todolistserverchapter3.api.v1.exception.ModelNotFoundException
+import org.example.todolistserverchapter3.api.v1.exception.NoPermissionException
 import org.example.todolistserverchapter3.api.v1.util.DtoConverter
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -148,9 +149,9 @@ class TodoServiceImpl(
         )
 
         if (userId == null) {
-            if (!comment.isOwner(request.password ?: "")) throw IllegalStateException("Password incorrect to update comment")
+            if (!comment.isOwner(request.password ?: "")) throw NoPermissionException()
         } else {
-            if (!comment.isOwner(userService.getUserProfile(userId))) throw IllegalStateException("No permission to update comment")
+            if (!comment.isOwner(userService.getUserProfile(userId))) throw NoPermissionException()
         }
 
         comment.content = request.content
@@ -166,9 +167,9 @@ class TodoServiceImpl(
         )
 
         if (userId == null) {
-            if (!comment.isOwner(request?.password ?: "")) throw IllegalStateException("Password incorrect to update comment")
+            if (!comment.isOwner(request?.password ?: "")) throw NoPermissionException()
         } else {
-            if (!comment.isOwner(userService.getUserProfile(userId))) throw IllegalStateException("No permission to update comment")
+            if (!comment.isOwner(userService.getUserProfile(userId))) throw NoPermissionException()
         }
 
         commentRepository.delete(comment)

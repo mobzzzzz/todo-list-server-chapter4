@@ -33,4 +33,9 @@ class GlobalExceptionHandler {
     fun handleAlreadyAuthorizedException(e: AlreadyAuthorizedException): ResponseEntity<ErrorDto> {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorDto(e.message, "104"))
     }
+
+    @ExceptionHandler(NoPermissionException::class)
+    fun handleNoPermissionException(e: NoPermissionException): ResponseEntity<ErrorDto> {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorDto(e.message, "105"))
+    }
 }

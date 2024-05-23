@@ -4,6 +4,7 @@ import jakarta.persistence.*
 import org.example.todolistserverchapter3.api.v1.domain.todo.dto.comment.CommentCreateWithNamePasswordDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.dto.comment.CommentCreateWithUserDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.model.status.CommentStatus
+import org.example.todolistserverchapter3.api.v1.domain.user.dto.UserDto
 import org.example.todolistserverchapter3.api.v1.domain.user.model.User
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.SQLDelete
@@ -65,12 +66,12 @@ class Comment(
     }
 
     companion object {
-        fun fromDto(request: CommentCreateWithUserDto, todo: Todo, userId: Long?): Comment {
+        fun fromDto(request: CommentCreateWithUserDto, todo: Todo, userDto: UserDto): Comment {
             return Comment(
                 content = request.content,
-                userName = request.userName,
-                todo = todo,
-                userId = userId
+                userName = userDto.nickname,
+                userId = userDto.id,
+                todo = todo
             ).apply { validate() }
         }
 

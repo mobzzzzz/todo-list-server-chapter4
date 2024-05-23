@@ -116,13 +116,14 @@ class TodoServiceImpl(
     @Transactional
     override fun createComment(todoId: Long, userId: Long, request: CommentCreateWithUserDto): CommentDto {
         val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
+        val userDto = userService.getUserProfile(userId)
 
         return DtoConverter.convertToCommentDto(
             commentRepository.save(
                 Comment.fromDto(
                     request = request,
                     todo = todo,
-                    userId = userId,
+                    userDto = userDto,
                 )
             )
         )

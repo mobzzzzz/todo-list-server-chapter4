@@ -26,9 +26,9 @@ object DtoConverter {
         return CommentDto(
             id = comment.id!!,
             todoId = comment.todo.id!!,
-            userId = comment.user?.id,
+            userId = comment.userId,
             content = comment.content,
-            name = comment.getUserName(),
+            name = comment.userName,
             status = comment.status.name,
             createdAt = comment.createdAt.toString(),
         )

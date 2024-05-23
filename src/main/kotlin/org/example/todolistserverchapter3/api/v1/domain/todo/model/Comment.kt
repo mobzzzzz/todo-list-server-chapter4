@@ -19,8 +19,8 @@ class Comment(
     @Column(name = "content")
     var content: String,
 
-    @Column(name = "name")
-    var name: String? = null,
+    @Column(name = "user_name")
+    var userName: String,
 
     @Column(name = "password")
     var password: String? = null,
@@ -44,9 +44,8 @@ class Comment(
     @JoinColumn(name = "todo_id")
     val todo: Todo,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    val user: User? = null,
+    @Column(name = "user_id")
+    var userId: Long? = null,
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,11 +55,9 @@ class Comment(
         return this.password == password
     }
 
-    fun isOwner(user: User): Boolean {
-        return this.user == user
+    fun isOwner(userId: Long?): Boolean {
+        return this.userId == userId
     }
-
-    fun getUserName() = this.user?.profile?.nickname ?: this.name ?: ""
 
     private fun validate() {
         require(this.content.isNotBlank()) { "Content must not be blank" }
@@ -68,18 +65,19 @@ class Comment(
     }
 
     companion object {
-        fun fromDto(request: CommentCreateWithUserDto, todo: Todo, user: User): Comment {
+        fun fromDto(request: CommentCreateWithUserDto, todo: Todo, userId: Long?): Comment {
             return Comment(
                 content = request.content,
+                userName = request.userName,
                 todo = todo,
-                user = user
+                userId = userId
             ).apply { validate() }
         }
 
         fun fromDto(request: CommentCreateWithNamePasswordDto, todo: Todo): Comment {
             return Comment(
                 content = request.content,
-                name = request.name,
+                userName = request.name,
                 password = request.password,
                 todo = todo
             ).apply { validate() }

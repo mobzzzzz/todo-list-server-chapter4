@@ -32,7 +32,7 @@ interface TodoService {
      * @param 생성할 할 일 카드 정보
      * @return 생성된 할 일 카드 정보
      */
-    fun createTodo(request: TodoCreateDto): TodoDto
+    fun createTodo(userId: Long, request: TodoCreateDto): TodoDto
 
     /**
      * 할 일 카드 정보를 수정합니다.
@@ -41,7 +41,7 @@ interface TodoService {
      * @param request: 수정할 할 일 카드 정보
      * @return 수정된 할 일 카드 정보
      */
-    fun updateTodo(todoId: Long, request: TodoUpdateDto): TodoDto
+    fun updateTodo(todoId: Long, userId: Long, request: TodoUpdateDto): TodoDto
 
     /**
      * 할 일 카드의 진행 상태를 수정합니다.
@@ -50,14 +50,14 @@ interface TodoService {
      * @param request: 수정할 할 일 카드 진행 상태
      * @return 수정된 할 일 카드 정보
      */
-    fun updateTodoCardStatus(todoId: Long, request: TodoUpdateCardStatusDto): TodoDto
+    fun updateTodoCardStatus(todoId: Long, userId: Long, request: TodoUpdateCardStatusDto): TodoDto
 
     /**
      * 할 일 카드를 삭제합니다.
      *
      * @param 할 일 카드 ID
      */
-    fun deleteTodo(todoId: Long)
+    fun deleteTodo(todoId: Long, userId: Long)
 
     /**
      * 댓글 목록을 조회합니다.
@@ -66,7 +66,7 @@ interface TodoService {
      * @param pageable: 페이지, 정렬 정보
      * @return 댓글 목록
      */
-    fun getCommentList(todoId: Long, pageable: Pageable): Page<CommentDto>
+    fun getCommentList(todoId: Long, userId: Long, pageable: Pageable): Page<CommentDto>
 
     /**
      * 단일 댓글을 조회합니다.
@@ -75,7 +75,7 @@ interface TodoService {
      * @param commentId: 댓글 ID
      * @return 댓글 정보
      */
-    fun getComment(todoId: Long, commentId: Long): CommentDto
+    fun getComment(todoId: Long, commentId: Long, userId: Long): CommentDto
 
     /**
      * 로그인 된 유저의 댓글을 생성합니다.
@@ -84,7 +84,7 @@ interface TodoService {
      * @param request: 댓글 생성 요청 정보
      * @return 생성된 댓글 정보
      */
-    fun createComment(todoId: Long, request: CommentCreateWithUserDto): CommentDto
+    fun createComment(todoId: Long, userId: Long, request: CommentCreateWithUserDto): CommentDto
 
     /**
      * 익명 유저의 댓글을 생성합니다.
@@ -103,7 +103,7 @@ interface TodoService {
      * @param request: 댓글 수정 요청 정보
      * @return 수정된 댓글 정보
      */
-    fun updateComment(todoId: Long, commentId: Long, request: CommentUpdateDto): CommentDto
+    fun updateComment(todoId: Long, commentId: Long, userId: Long, request: CommentUpdateDto): CommentDto
 
     /**
      * 댓글을 삭제합니다.
@@ -111,5 +111,5 @@ interface TodoService {
      * @param todoId: 할 일 카드 ID
      * @param commentId: 댓글 ID
      */
-    fun deleteComment(todoId: Long, commentId: Long)
+    fun deleteComment(todoId: Long, commentId: Long, userId: Long?)
 }

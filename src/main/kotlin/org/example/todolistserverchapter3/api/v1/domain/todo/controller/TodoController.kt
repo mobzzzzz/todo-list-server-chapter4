@@ -10,6 +10,7 @@ import org.example.todolistserverchapter3.api.v1.domain.todo.model.status.TodoCa
 import org.example.todolistserverchapter3.api.v1.domain.todo.query.TodoSort
 import org.example.todolistserverchapter3.api.v1.domain.todo.query.convertToSort
 import org.example.todolistserverchapter3.api.v1.domain.todo.service.TodoService
+import org.example.todolistserverchapter3.api.v1.exception.NotAuthorizedException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -34,42 +35,97 @@ class TodoController(
     ): ResponseEntity<Page<TodoDto>> {
         val pageable: Pageable = PageRequest.of(page, size, sort.convertToSort())
 
-        return ResponseEntity.status(HttpStatus.OK).body(todoService.getTodoList(userIds, pageable))
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(
+                todoService.getTodoList(
+                    userIds = userIds,
+                    pageable = pageable
+                )
+            )
     }
 
     @GetMapping("/{todo_id}")
-    fun getTodo(@PathVariable("todo_id") todoId: Long): ResponseEntity<TodoDto> {
-        return ResponseEntity.status(HttpStatus.OK).body(todoService.getTodo(todoId))
+    fun getTodo(
+        @PathVariable("todo_id") todoId: Long
+    ): ResponseEntity<TodoDto> {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(
+                todoService.getTodo(todoId = todoId)
+            )
     }
 
     @PostMapping
-    fun createTodo(@Valid @RequestBody request: TodoCreateDto): ResponseEntity<TodoDto> {
-        return ResponseEntity.status(HttpStatus.CREATED).body(todoService.createTodo(request))
+    fun createTodo(
+        @Valid @RequestBody request: TodoCreateDto,
+        @ModelAttribute("userId") userId: Long?
+    ): ResponseEntity<TodoDto> {
+        if (userId == null) {
+            throw NotAuthorizedException()
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(
+                todoService.createTodo(
+                    userId = userId,
+                    request = request
+                )
+            )
     }
 
     @PutMapping("/{todo_id}")
     fun updateTodo(
         @PathVariable("todo_id") todoId: Long,
-        @Valid @RequestBody request: TodoUpdateDto
+        @Valid @RequestBody request: TodoUpdateDto,
+        @ModelAttribute("userId") userId: Long?
     ): ResponseEntity<TodoDto> {
-        return ResponseEntity.status(HttpStatus.OK).body(todoService.updateTodo(todoId, request))
+        if (userId == null) {
+            throw NotAuthorizedException()
+        }
+
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(
+                todoService.updateTodo(
+                    todoId = todoId,
+                    userId = userId,
+                    request = request
+                )
+            )
     }
 
     @PutMapping("/{todo_id}/status")
     fun updateTodoCardStatus(
         @PathVariable("todo_id") todoId: Long,
-        @Valid @RequestBody request: TodoUpdateCardStatusDto
+        @Valid @RequestBody request: TodoUpdateCardStatusDto,
+        @ModelAttribute("userId") userId: Long?
     ): ResponseEntity<TodoDto> {
-        if (!TodoCardStatus.entries.map { it.name }.contains(request.status)){
+        if (userId == null) {
+            throw NotAuthorizedException()
+        }
+
+        if (!TodoCardStatus.entries.map { it.name }.contains(request.status)) {
             throw IllegalArgumentException("Invalid card status ${request.status}")
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(todoService.updateTodoCardStatus(todoId, request))
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(
+                todoService.updateTodoCardStatus(
+                    todoId = todoId,
+                    userId = userId,
+                    request = request
+                )
+            )
     }
 
     @DeleteMapping("/{todo_id}")
-    fun deleteTodo(@PathVariable("todo_id") todoId: Long): ResponseEntity<Unit> {
-        todoService.deleteTodo(todoId)
+    fun deleteTodo(
+        @PathVariable("todo_id") todoId: Long,
+        @ModelAttribute("userId") userId: Long?
+    ): ResponseEntity<Unit> {
+        if (userId == null) {
+            throw NotAuthorizedException()
+        }
+
+        todoService.deleteTodo(todoId = todoId, userId = userId)
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }

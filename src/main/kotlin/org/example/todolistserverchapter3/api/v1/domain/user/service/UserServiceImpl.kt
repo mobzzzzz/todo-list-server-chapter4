@@ -31,11 +31,6 @@ class UserServiceImpl(
         return DtoConverter.convertToUserDto(user)
     }
 
-    @Transactional
-    override fun signOut() {
-        TODO("아마도 세션을 지우는 로직 구현")
-    }
-
     override fun getUserProfile(userId: Long): UserDto {
         val user = userRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User not found", userId)
 
@@ -47,7 +42,7 @@ class UserServiceImpl(
     }
 
     @Transactional
-    override fun updateUserProfile(userId: Long, request: UserUpdateProfileDto): UserDto {
+    override fun updateUserProfile(userId: Long, currentUserId: Long, request: UserUpdateProfileDto): UserDto {
         val user = userRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User not found", userId)
         user.updateProfile(Profile(nickname = request.nickname))
 
@@ -55,7 +50,7 @@ class UserServiceImpl(
     }
 
     @Transactional
-    override fun deactivate(userId: Long) {
+    override fun deactivate(userId: Long, currentUserId: Long) {
         val user = userRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User not found", userId)
 
         userRepository.delete(user)

@@ -24,12 +24,6 @@ interface UserService {
     fun signIn(request: SignInDto): UserDto
 
     /**
-     * 로그아웃을 진행합니다.
-     *
-     */
-    fun signOut()
-
-    /**
      * 유저의 프로필 정보를 조회합니다.
      *
      * @param 조회할 유저 ID
@@ -46,12 +40,12 @@ interface UserService {
      * @param request: 수정할 프로필 정보
      * @return 수정된 유저의 프로필 정보
      */
-    fun updateUserProfile(userId: Long, request: UserUpdateProfileDto): UserDto
+    fun updateUserProfile(userId: Long, currentUserId: Long, request: UserUpdateProfileDto): UserDto
 
     /**
      * 회원 탈퇴를 진행합니다.
      *
      * @param 탈퇴할 유저 ID
      */
-    fun deactivate(userId: Long)
+    fun deactivate(userId: Long, currentUserId: Long)
 }

@@ -51,11 +51,11 @@ class TodoServiceImpl(
     }
 
     @Transactional
-    override fun createTodo(request: TodoCreateDto): TodoDto {
+    override fun createTodo(userId: Long, request: TodoCreateDto): TodoDto {
         val todo = todoRepository.save(
             Todo.fromDto(
                 request = request,
-                userId = request.userId
+                userId = userId
             )
         )
 
@@ -65,7 +65,7 @@ class TodoServiceImpl(
     }
 
     @Transactional
-    override fun updateTodo(todoId: Long, request: TodoUpdateDto): TodoDto {
+    override fun updateTodo(todoId: Long, userId: Long, request: TodoUpdateDto): TodoDto {
         val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
 
         val (title, description) = request
@@ -80,7 +80,7 @@ class TodoServiceImpl(
     }
 
     @Transactional
-    override fun updateTodoCardStatus(todoId: Long, request: TodoUpdateCardStatusDto): TodoDto {
+    override fun updateTodoCardStatus(todoId: Long, userId: Long, request: TodoUpdateCardStatusDto): TodoDto {
         val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
 
         todo.cardStatus = TodoCardStatus.valueOf(request.status)
@@ -92,7 +92,7 @@ class TodoServiceImpl(
     }
 
     @Transactional
-    override fun deleteTodo(todoId: Long) {
+    override fun deleteTodo(todoId: Long, userId: Long) {
         val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
         val comments = commentRepository.findByTodoId(todoId)
 
@@ -100,11 +100,11 @@ class TodoServiceImpl(
         todoRepository.delete(todo)
     }
 
-    override fun getCommentList(todoId: Long, pageable: Pageable): Page<CommentDto> {
+    override fun getCommentList(todoId: Long, userId: Long, pageable: Pageable): Page<CommentDto> {
         return commentRepository.findByTodoId(todoId, pageable).map { DtoConverter.convertToCommentDto(it) }
     }
 
-    override fun getComment(todoId: Long, commentId: Long): CommentDto {
+    override fun getComment(todoId: Long, commentId: Long, userId: Long): CommentDto {
         val comment = commentRepository.findByTodoIdAndId(todoId, commentId) ?: throw ModelNotFoundException(
             "Todo not found",
             todoId
@@ -114,7 +114,7 @@ class TodoServiceImpl(
     }
 
     @Transactional
-    override fun createComment(todoId: Long, request: CommentCreateWithUserDto): CommentDto {
+    override fun createComment(todoId: Long, userId: Long, request: CommentCreateWithUserDto): CommentDto {
         val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
 
         return DtoConverter.convertToCommentDto(
@@ -122,7 +122,7 @@ class TodoServiceImpl(
                 Comment.fromDto(
                     request = request,
                     todo = todo,
-                    userId = request.userId,
+                    userId = userId,
                 )
             )
         )
@@ -143,7 +143,7 @@ class TodoServiceImpl(
     }
 
     @Transactional
-    override fun updateComment(todoId: Long, commentId: Long, request: CommentUpdateDto): CommentDto {
+    override fun updateComment(todoId: Long, commentId: Long, userId: Long, request: CommentUpdateDto): CommentDto {
         val comment = commentRepository.findByTodoIdAndId(todoId, commentId) ?: throw ModelNotFoundException(
             "Comment not found",
             commentId
@@ -155,7 +155,7 @@ class TodoServiceImpl(
     }
 
     @Transactional
-    override fun deleteComment(todoId: Long, commentId: Long) {
+    override fun deleteComment(todoId: Long, commentId: Long, userId: Long?) {
         val comment = commentRepository.findByTodoIdAndId(todoId, commentId) ?: throw ModelNotFoundException(
             "Comment not found",
             commentId

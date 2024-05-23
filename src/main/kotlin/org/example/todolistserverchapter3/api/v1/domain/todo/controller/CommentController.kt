@@ -9,6 +9,7 @@ import org.example.todolistserverchapter3.api.v1.domain.todo.dto.comment.Comment
 import org.example.todolistserverchapter3.api.v1.domain.todo.query.CommentSort
 import org.example.todolistserverchapter3.api.v1.domain.todo.query.convertToSort
 import org.example.todolistserverchapter3.api.v1.domain.todo.service.TodoService
+import org.example.todolistserverchapter3.api.v1.exception.NotAuthorizedException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/todos/{todo_id}/comments")
+@SessionAttributes("user")
 @Validated
 class CommentController(
     val todoService: TodoService
@@ -30,26 +32,55 @@ class CommentController(
         @RequestParam(defaultValue = "created_at_asc") sort: CommentSort,
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "10") size: Int,
+        @ModelAttribute("userId") userId: Long?
     ): ResponseEntity<Page<CommentDto>> {
+        if (userId == null) { throw NotAuthorizedException() }
         val pageable: Pageable = PageRequest.of(page, size, sort.convertToSort())
 
-        return ResponseEntity.status(HttpStatus.OK).body(todoService.getCommentList(todoId, pageable))
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(
+                todoService.getCommentList(
+                    todoId = todoId,
+                    userId = userId,
+                    pageable = pageable
+                )
+            )
     }
 
     @GetMapping("/{comment_id}")
     fun getComment(
         @PathVariable("todo_id") todoId: Long,
-        @PathVariable("comment_id") commentId: Long
+        @PathVariable("comment_id") commentId: Long,
+        @ModelAttribute("userId") userId: Long?
     ): ResponseEntity<CommentDto> {
-        return ResponseEntity.status(HttpStatus.OK).body(todoService.getComment(todoId, commentId))
+        if (userId == null) { throw NotAuthorizedException() }
+
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(
+                todoService.getComment(
+                    todoId = todoId,
+                    userId = userId,
+                    commentId = commentId
+                )
+            )
     }
 
     @PostMapping
     fun createComment(
         @PathVariable("todo_id") todoId: Long,
-        @Valid @RequestBody request: CommentCreateWithUserDto
+        @Valid @RequestBody request: CommentCreateWithUserDto,
+        @ModelAttribute("userId") userId: Long?
     ): ResponseEntity<CommentDto> {
-        return ResponseEntity.status(HttpStatus.CREATED).body(todoService.createComment(todoId, request))
+        if (userId == null) { throw NotAuthorizedException() }
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(
+                todoService.createComment(
+                    todoId = todoId,
+                    userId = userId,
+                    request = request
+                )
+            )
     }
 
     @PostMapping("/anonymous")
@@ -57,24 +88,48 @@ class CommentController(
         @PathVariable("todo_id") todoId: Long,
         @Valid @RequestBody request: CommentCreateWithNamePasswordDto
     ): ResponseEntity<CommentDto> {
-        return ResponseEntity.status(HttpStatus.CREATED).body(todoService.createComment(todoId, request))
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(
+                todoService.createComment(
+                    todoId,
+                    request
+                )
+            )
     }
 
     @PutMapping("/{comment_id}")
     fun updateComment(
         @PathVariable("todo_id") todoId: Long,
         @PathVariable("comment_id") commentId: Long,
-        @Valid @RequestBody request: CommentUpdateDto
+        @Valid @RequestBody request: CommentUpdateDto,
+        @ModelAttribute("userId") userId: Long?
     ): ResponseEntity<CommentDto> {
-        return ResponseEntity.status(HttpStatus.OK).body(todoService.updateComment(todoId, commentId, request))
+        if (userId == null) { throw NotAuthorizedException() }
+
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(
+                todoService.updateComment(
+                    todoId = todoId,
+                    commentId = commentId,
+                    userId = userId,
+                    request = request
+                )
+            )
     }
 
     @DeleteMapping("/{comment_id}")
     fun deleteComment(
         @PathVariable("todo_id") todoId: Long,
-        @PathVariable("comment_id") commentId: Long
+        @PathVariable("comment_id") commentId: Long,
+        @ModelAttribute("userId") userId: Long?
     ): ResponseEntity<Unit> {
-        todoService.deleteComment(todoId, commentId)
+        if (userId == null) { throw NotAuthorizedException() }
+
+        todoService.deleteComment(
+            todoId = todoId,
+            commentId = commentId,
+            userId = userId
+        )
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }

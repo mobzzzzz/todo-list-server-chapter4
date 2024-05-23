@@ -18,4 +18,9 @@ class GlobalExceptionHandler {
     fun handleIllegalStateException(e: IllegalStateException): ResponseEntity<ErrorDto> {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorDto(e.message, "101"))
     }
+
+    @ExceptionHandler(IllegalArgumentException::class)
+    fun handleIllegalArgumentException(e: IllegalArgumentException): ResponseEntity<ErrorDto> {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorDto(e.message, "102"))
+    }
 }

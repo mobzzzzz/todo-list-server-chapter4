@@ -6,6 +6,7 @@ import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoCreateDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoUpdateCardStatusDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoUpdateDto
+import org.example.todolistserverchapter3.api.v1.domain.todo.model.status.TodoCardStatus
 import org.example.todolistserverchapter3.api.v1.domain.todo.query.TodoSort
 import org.example.todolistserverchapter3.api.v1.domain.todo.query.convertToSort
 import org.example.todolistserverchapter3.api.v1.domain.todo.service.TodoService
@@ -59,6 +60,10 @@ class TodoController(
         @PathVariable("todo_id") todoId: Long,
         @Valid @RequestBody request: TodoUpdateCardStatusDto
     ): ResponseEntity<TodoDto> {
+        if (!TodoCardStatus.entries.map { it.name }.contains(request.status)){
+            throw IllegalArgumentException("Invalid card status ${request.status}")
+        }
+
         return ResponseEntity.status(HttpStatus.OK).body(todoService.updateTodoCardStatus(todoId, request))
     }
 

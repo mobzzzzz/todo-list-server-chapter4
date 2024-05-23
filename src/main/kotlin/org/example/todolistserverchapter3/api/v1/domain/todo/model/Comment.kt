@@ -6,6 +6,7 @@ import org.example.todolistserverchapter3.api.v1.domain.todo.dto.comment.Comment
 import org.example.todolistserverchapter3.api.v1.domain.todo.model.status.CommentStatus
 import org.example.todolistserverchapter3.api.v1.domain.user.dto.UserDto
 import org.example.todolistserverchapter3.api.v1.domain.user.model.User
+import org.example.todolistserverchapter3.api.v1.domain.user.model.UserRole
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.SQLDelete
 import org.hibernate.annotations.SQLRestriction
@@ -56,8 +57,8 @@ class Comment(
         return this.password == password
     }
 
-    fun isOwner(userId: Long?): Boolean {
-        return this.userId == userId
+    fun isOwner(user: UserDto): Boolean {
+        return UserRole.valueOf(user.role) == UserRole.Admin || this.userId == user.id
     }
 
     private fun validate() {

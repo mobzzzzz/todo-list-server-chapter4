@@ -1,10 +1,7 @@
 package org.example.todolistserverchapter3.api.v1.domain.todo.service
 
-import org.example.todolistserverchapter3.api.v1.domain.todo.dto.comment.CommentCreateWithNamePasswordDto
-import org.example.todolistserverchapter3.api.v1.domain.todo.dto.comment.CommentCreateWithUserDto
-import org.example.todolistserverchapter3.api.v1.domain.todo.dto.comment.CommentDto
-import org.example.todolistserverchapter3.api.v1.domain.todo.dto.comment.CommentUpdateDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.dto.*
+import org.example.todolistserverchapter3.api.v1.domain.todo.dto.comment.*
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
@@ -103,7 +100,7 @@ interface TodoService {
      * @param request: 댓글 수정 요청 정보
      * @return 수정된 댓글 정보
      */
-    fun updateComment(todoId: Long, commentId: Long, userId: Long, request: CommentUpdateDto): CommentDto
+    fun updateComment(todoId: Long, commentId: Long, userId: Long?, request: CommentUpdateDto): CommentDto
 
     /**
      * 댓글을 삭제합니다.
@@ -111,5 +108,5 @@ interface TodoService {
      * @param todoId: 할 일 카드 ID
      * @param commentId: 댓글 ID
      */
-    fun deleteComment(todoId: Long, commentId: Long, userId: Long?)
+    fun deleteComment(todoId: Long, commentId: Long, userId: Long?, request: CommentDeleteWithPasswordDto?)
 }

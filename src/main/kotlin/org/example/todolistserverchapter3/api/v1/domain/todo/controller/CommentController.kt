@@ -2,10 +2,7 @@ package org.example.todolistserverchapter3.api.v1.domain.todo.controller
 
 import jakarta.validation.Valid
 import org.example.todolistserverchapter3.api.v1.domain.ApiV1MappingConfig
-import org.example.todolistserverchapter3.api.v1.domain.todo.dto.comment.CommentCreateWithNamePasswordDto
-import org.example.todolistserverchapter3.api.v1.domain.todo.dto.comment.CommentCreateWithUserDto
-import org.example.todolistserverchapter3.api.v1.domain.todo.dto.comment.CommentDto
-import org.example.todolistserverchapter3.api.v1.domain.todo.dto.comment.CommentUpdateDto
+import org.example.todolistserverchapter3.api.v1.domain.todo.dto.comment.*
 import org.example.todolistserverchapter3.api.v1.domain.todo.query.CommentSort
 import org.example.todolistserverchapter3.api.v1.domain.todo.query.convertToSort
 import org.example.todolistserverchapter3.api.v1.domain.todo.service.TodoService
@@ -34,7 +31,9 @@ class CommentController(
         @RequestParam(defaultValue = "10") size: Int,
         @ModelAttribute("userId") userId: Long?
     ): ResponseEntity<Page<CommentDto>> {
-        if (userId == null) { throw NotAuthorizedException() }
+        if (userId == null) {
+            throw NotAuthorizedException()
+        }
         val pageable: Pageable = PageRequest.of(page, size, sort.convertToSort())
 
         return ResponseEntity.status(HttpStatus.OK)
@@ -53,7 +52,9 @@ class CommentController(
         @PathVariable("comment_id") commentId: Long,
         @ModelAttribute("userId") userId: Long?
     ): ResponseEntity<CommentDto> {
-        if (userId == null) { throw NotAuthorizedException() }
+        if (userId == null) {
+            throw NotAuthorizedException()
+        }
 
         return ResponseEntity.status(HttpStatus.OK)
             .body(
@@ -71,7 +72,9 @@ class CommentController(
         @Valid @RequestBody request: CommentCreateWithUserDto,
         @ModelAttribute("userId") userId: Long?
     ): ResponseEntity<CommentDto> {
-        if (userId == null) { throw NotAuthorizedException() }
+        if (userId == null) {
+            throw NotAuthorizedException()
+        }
 
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(
@@ -104,8 +107,6 @@ class CommentController(
         @Valid @RequestBody request: CommentUpdateDto,
         @ModelAttribute("userId") userId: Long?
     ): ResponseEntity<CommentDto> {
-        if (userId == null) { throw NotAuthorizedException() }
-
         return ResponseEntity.status(HttpStatus.OK)
             .body(
                 todoService.updateComment(
@@ -121,14 +122,14 @@ class CommentController(
     fun deleteComment(
         @PathVariable("todo_id") todoId: Long,
         @PathVariable("comment_id") commentId: Long,
-        @ModelAttribute("userId") userId: Long?
+        @ModelAttribute("userId") userId: Long?,
+        @RequestBody request: CommentDeleteWithPasswordDto? = null,
     ): ResponseEntity<Unit> {
-        if (userId == null) { throw NotAuthorizedException() }
-
         todoService.deleteComment(
             todoId = todoId,
             commentId = commentId,
-            userId = userId
+            userId = userId,
+            request = request
         )
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()

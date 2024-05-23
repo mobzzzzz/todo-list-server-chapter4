@@ -8,11 +8,11 @@ import org.example.todolistserverchapter3.api.v1.domain.user.dto.UserDto
 import org.example.todolistserverchapter3.api.v1.domain.user.model.User
 
 object DtoConverter {
-    fun convertToTodoDto(todo: Todo, comments: List<Comment> = emptyList()): TodoDto {
+    fun convertToTodoDto(todo: Todo, userDto: UserDto?, comments: List<Comment> = emptyList()): TodoDto {
         return TodoDto(
             id = todo.id!!,
-            userId = todo.user.id!!,
-            userName = todo.user.profile.nickname,
+            userId = todo.userId,
+            userName = userDto?.nickname ?: "(탈퇴한 유저입니다.)",
             title = todo.title,
             description = todo.description,
             status = todo.status.name,

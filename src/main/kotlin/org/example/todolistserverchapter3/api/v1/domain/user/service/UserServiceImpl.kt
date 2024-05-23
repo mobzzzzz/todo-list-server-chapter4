@@ -42,6 +42,10 @@ class UserServiceImpl(
         return DtoConverter.convertToUserDto(user)
     }
 
+    override fun getUserProfiles(userIds: List<Long>): List<UserDto> {
+        return userRepository.findAllById(userIds).map { DtoConverter.convertToUserDto(it) }
+    }
+
     @Transactional
     override fun updateUserProfile(userId: Long, request: UserUpdateProfileDto): UserDto {
         val user = userRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User not found", userId)

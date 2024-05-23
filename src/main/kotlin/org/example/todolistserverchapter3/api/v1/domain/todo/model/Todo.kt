@@ -41,17 +41,12 @@ class Todo(
     @Column(name = "deleted_at")
     var deletedAt: LocalDateTime? = null,
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
-    val user: User
+    @Column(name = "user_id")
+    val userId: Long
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
-
-    fun isOwner(user: User): Boolean {
-        return this.user == user
-    }
 
     private fun validate() {
         require(title.isNotBlank()) { "Title cannot be blank" }
@@ -60,11 +55,11 @@ class Todo(
     }
 
     companion object {
-        fun fromDto(request: TodoCreateDto, user: User): Todo {
+        fun fromDto(request: TodoCreateDto, userId: Long): Todo {
             return Todo(
                 title = request.title,
                 description = request.description,
-                user = user
+                userId = userId
             ).apply { this.validate() }
         }
     }

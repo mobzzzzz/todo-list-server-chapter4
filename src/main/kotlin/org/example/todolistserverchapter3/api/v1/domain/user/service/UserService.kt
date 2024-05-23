@@ -37,6 +37,8 @@ interface UserService {
      */
     fun getUserProfile(userId: Long): UserDto
 
+    fun getUserProfiles(userIds: List<Long>): List<UserDto>
+
     /**
      * 유저의 프로필 정보를 수정합니다.
      *

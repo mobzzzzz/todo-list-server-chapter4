@@ -13,7 +13,7 @@ import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoUpdateDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.model.Todo
 import org.example.todolistserverchapter3.api.v1.domain.todo.model.status.TodoCardStatus
 import org.example.todolistserverchapter3.api.v1.domain.todo.repository.TodoRepository
-import org.example.todolistserverchapter3.api.v1.domain.user.repository.UserRepository
+import org.example.todolistserverchapter3.api.v1.domain.user.service.UserService
 import org.example.todolistserverchapter3.api.v1.exception.ModelNotFoundException
 import org.example.todolistserverchapter3.api.v1.util.DtoConverter
 import org.springframework.data.domain.Page
@@ -26,7 +26,8 @@ import org.springframework.transaction.annotation.Transactional
 class TodoServiceImpl(
     val todoRepository: TodoRepository,
     val commentRepository: CommentRepository,
-    val userRepository: UserRepository,
+
+    val userService: UserService
 ) : TodoService {
 
     override fun getTodoList(userIds: List<Long>?, pageable: Pageable): Page<TodoDto> {
@@ -36,31 +37,31 @@ class TodoServiceImpl(
             todoRepository.findAll(pageable)
         }
 
-        return todos.map { DtoConverter.convertToTodoDto(it) }
+        val userDtos = todos.map { it.userId }.distinct().let { userService.getUserProfiles(it) }
+
+        return todos.map { DtoConverter.convertToTodoDto(todo = it, userDto = userDtos[it.userId.toInt()]) }
     }
 
     override fun getTodo(todoId: Long): TodoDto {
         val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
         val comments = commentRepository.findByTodoId(todoId)
+        val userDto = userService.getUserProfile(todo.userId)
 
-        return DtoConverter.convertToTodoDto(todo, comments.content)
+        return DtoConverter.convertToTodoDto(todo = todo, userDto = userDto, comments = comments.content)
     }
 
     @Transactional
     override fun createTodo(request: TodoCreateDto): TodoDto {
-        val user = userRepository.findByIdOrNull(request.userId) ?: throw ModelNotFoundException(
-            "User not found",
-            request.userId
-        )
-
-        return DtoConverter.convertToTodoDto(
-            todoRepository.save(
-                Todo.fromDto(
-                    request = request,
-                    user = user
-                ),
+        val todo = todoRepository.save(
+            Todo.fromDto(
+                request = request,
+                userId = request.userId
             )
         )
+
+        val userDto = userService.getUserProfile(todo.userId)
+
+        return DtoConverter.convertToTodoDto(todo = todo, userDto = userDto)
     }
 
     @Transactional
@@ -72,20 +73,22 @@ class TodoServiceImpl(
         todo.title = title
         todo.description = description
 
-        return DtoConverter.convertToTodoDto(todoRepository.save(todo))
+        val updatedTodo = todoRepository.save(todo)
+        val userDto = userService.getUserProfile(todo.userId)
+
+        return DtoConverter.convertToTodoDto(todo = updatedTodo, userDto = userDto)
     }
 
     @Transactional
     override fun updateTodoCardStatus(todoId: Long, request: TodoUpdateCardStatusDto): TodoDto {
         val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
 
-        try {
-            todo.cardStatus = TodoCardStatus.valueOf(request.status)
-        } catch (e: IllegalArgumentException) {
-            throw IllegalStateException("Invalid card status ${request.status}")
-        }
+        todo.cardStatus = TodoCardStatus.valueOf(request.status)
 
-        return DtoConverter.convertToTodoDto(todoRepository.save(todo))
+        val updatedTodo = todoRepository.save(todo)
+        val userDto = userService.getUserProfile(todo.userId)
+
+        return DtoConverter.convertToTodoDto(todo = updatedTodo, userDto = userDto)
     }
 
     @Transactional
@@ -113,17 +116,13 @@ class TodoServiceImpl(
     @Transactional
     override fun createComment(todoId: Long, request: CommentCreateWithUserDto): CommentDto {
         val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
-        val user = userRepository.findByIdOrNull(request.userId) ?: throw ModelNotFoundException(
-            "User not found",
-            request.userId
-        )
 
         return DtoConverter.convertToCommentDto(
             commentRepository.save(
                 Comment.fromDto(
                     request = request,
                     todo = todo,
-                    user = user,
+                    userId = request.userId,
                 )
             )
         )

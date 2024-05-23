@@ -1,9 +1,9 @@
-package org.example.todolistserverchapter3.api.v1.domain.comment.model
+package org.example.todolistserverchapter3.api.v1.domain.todo.model
 
 import jakarta.persistence.*
-import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentCreateWithNamePasswordDto
-import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentCreateWithUserDto
-import org.example.todolistserverchapter3.api.v1.domain.todo.model.Todo
+import org.example.todolistserverchapter3.api.v1.domain.todo.dto.comment.CommentCreateWithNamePasswordDto
+import org.example.todolistserverchapter3.api.v1.domain.todo.dto.comment.CommentCreateWithUserDto
+import org.example.todolistserverchapter3.api.v1.domain.todo.model.status.CommentStatus
 import org.example.todolistserverchapter3.api.v1.domain.user.model.User
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.SQLDelete

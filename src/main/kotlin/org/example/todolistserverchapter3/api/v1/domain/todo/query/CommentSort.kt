@@ -1,4 +1,4 @@
-package org.example.todolistserverchapter3.api.v1.domain.comment.query
+package org.example.todolistserverchapter3.api.v1.domain.todo.query
 
 import org.springframework.data.domain.Sort
 

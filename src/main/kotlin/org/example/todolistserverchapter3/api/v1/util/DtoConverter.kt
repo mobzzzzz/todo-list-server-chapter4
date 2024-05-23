@@ -1,7 +1,7 @@
 package org.example.todolistserverchapter3.api.v1.util
 
-import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentDto
-import org.example.todolistserverchapter3.api.v1.domain.comment.model.Comment
+import org.example.todolistserverchapter3.api.v1.domain.todo.dto.comment.CommentDto
+import org.example.todolistserverchapter3.api.v1.domain.todo.model.Comment
 import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.model.Todo
 import org.example.todolistserverchapter3.api.v1.domain.user.dto.UserDto

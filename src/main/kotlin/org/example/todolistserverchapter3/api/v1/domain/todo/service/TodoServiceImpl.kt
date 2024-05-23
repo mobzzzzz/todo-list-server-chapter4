@@ -1,17 +1,17 @@
 package org.example.todolistserverchapter3.api.v1.domain.todo.service
 
-import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentCreateWithNamePasswordDto
-import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentCreateWithUserDto
-import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentDto
-import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentUpdateDto
-import org.example.todolistserverchapter3.api.v1.domain.comment.model.Comment
-import org.example.todolistserverchapter3.api.v1.domain.comment.repository.CommentRepository
+import org.example.todolistserverchapter3.api.v1.domain.todo.dto.comment.CommentCreateWithNamePasswordDto
+import org.example.todolistserverchapter3.api.v1.domain.todo.dto.comment.CommentCreateWithUserDto
+import org.example.todolistserverchapter3.api.v1.domain.todo.dto.comment.CommentDto
+import org.example.todolistserverchapter3.api.v1.domain.todo.dto.comment.CommentUpdateDto
+import org.example.todolistserverchapter3.api.v1.domain.todo.model.Comment
+import org.example.todolistserverchapter3.api.v1.domain.todo.repository.CommentRepository
 import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoCreateDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoUpdateCardStatusDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoUpdateDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.model.Todo
-import org.example.todolistserverchapter3.api.v1.domain.todo.model.TodoCardStatus
+import org.example.todolistserverchapter3.api.v1.domain.todo.model.status.TodoCardStatus
 import org.example.todolistserverchapter3.api.v1.domain.todo.repository.TodoRepository
 import org.example.todolistserverchapter3.api.v1.domain.user.repository.UserRepository
 import org.example.todolistserverchapter3.api.v1.exception.ModelNotFoundException

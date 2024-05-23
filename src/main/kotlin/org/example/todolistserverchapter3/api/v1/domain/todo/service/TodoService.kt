@@ -1,9 +1,9 @@
 package org.example.todolistserverchapter3.api.v1.domain.todo.service
 
-import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentCreateWithNamePasswordDto
-import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentCreateWithUserDto
-import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentDto
-import org.example.todolistserverchapter3.api.v1.domain.comment.dto.CommentUpdateDto
+import org.example.todolistserverchapter3.api.v1.domain.todo.dto.comment.CommentCreateWithNamePasswordDto
+import org.example.todolistserverchapter3.api.v1.domain.todo.dto.comment.CommentCreateWithUserDto
+import org.example.todolistserverchapter3.api.v1.domain.todo.dto.comment.CommentDto
+import org.example.todolistserverchapter3.api.v1.domain.todo.dto.comment.CommentUpdateDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.dto.*
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable

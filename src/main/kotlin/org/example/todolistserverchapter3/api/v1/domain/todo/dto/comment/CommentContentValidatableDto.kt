@@ -1,4 +1,4 @@
-package org.example.todolistserverchapter3.api.v1.domain.comment.dto
+package org.example.todolistserverchapter3.api.v1.domain.todo.dto.comment
 
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size

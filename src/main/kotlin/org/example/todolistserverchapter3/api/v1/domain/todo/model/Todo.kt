@@ -2,6 +2,8 @@ package org.example.todolistserverchapter3.api.v1.domain.todo.model
 
 import jakarta.persistence.*
 import org.example.todolistserverchapter3.api.v1.domain.todo.dto.TodoCreateDto
+import org.example.todolistserverchapter3.api.v1.domain.todo.model.status.TodoCardStatus
+import org.example.todolistserverchapter3.api.v1.domain.todo.model.status.TodoStatus
 import org.example.todolistserverchapter3.api.v1.domain.user.model.User
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.SQLDelete

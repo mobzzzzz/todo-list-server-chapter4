@@ -8,6 +8,7 @@ import org.example.todolistserverchapter3.api.v1.domain.user.dto.UserUpdateProfi
 import org.example.todolistserverchapter3.api.v1.domain.user.model.Profile
 import org.example.todolistserverchapter3.api.v1.domain.user.model.User
 import org.example.todolistserverchapter3.api.v1.domain.user.repository.UserRepository
+import org.example.todolistserverchapter3.api.v1.exception.NoPermissionException
 import org.example.todolistserverchapter3.api.v1.util.DtoConverter
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -44,6 +45,10 @@ class UserServiceImpl(
     @Transactional
     override fun updateUserProfile(userId: Long, currentUserId: Long, request: UserUpdateProfileDto): UserDto {
         val user = userRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User not found", userId)
+        val currentUser = userRepository.findByIdOrNull(currentUserId) ?: throw ModelNotFoundException("User not found", currentUserId)
+
+        if (!user.hasPermission(currentUser)) throw NoPermissionException()
+
         user.updateProfile(Profile(nickname = request.nickname))
 
         return DtoConverter.convertToUserDto(userRepository.save(user))
@@ -52,6 +57,9 @@ class UserServiceImpl(
     @Transactional
     override fun deactivate(userId: Long, currentUserId: Long) {
         val user = userRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User not found", userId)
+        val currentUser = userRepository.findByIdOrNull(currentUserId) ?: throw ModelNotFoundException("User not found", currentUserId)
+
+        if (!user.hasPermission(currentUser)) throw NoPermissionException()
 
         userRepository.delete(user)
     }

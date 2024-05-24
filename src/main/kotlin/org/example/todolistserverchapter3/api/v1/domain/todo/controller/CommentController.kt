@@ -5,7 +5,7 @@ import org.example.todolistserverchapter3.api.v1.domain.ApiV1MappingConfig
 import org.example.todolistserverchapter3.api.v1.domain.todo.dto.comment.*
 import org.example.todolistserverchapter3.api.v1.domain.todo.query.CommentSort
 import org.example.todolistserverchapter3.api.v1.domain.todo.query.convertToSort
-import org.example.todolistserverchapter3.api.v1.domain.todo.service.TodoService
+import org.example.todolistserverchapter3.api.v1.domain.todo.service.CommentService
 import org.example.todolistserverchapter3.api.v1.exception.NotAuthorizedException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*
 @SessionAttributes("user")
 @Validated
 class CommentController(
-    val todoService: TodoService
+    val commentService: CommentService
 ) : ApiV1MappingConfig() {
 
     @GetMapping
@@ -38,7 +38,7 @@ class CommentController(
 
         return ResponseEntity.status(HttpStatus.OK)
             .body(
-                todoService.getCommentList(
+                commentService.getCommentList(
                     todoId = todoId,
                     userId = userId,
                     pageable = pageable
@@ -58,7 +58,7 @@ class CommentController(
 
         return ResponseEntity.status(HttpStatus.OK)
             .body(
-                todoService.getComment(
+                commentService.getComment(
                     todoId = todoId,
                     userId = userId,
                     commentId = commentId
@@ -78,7 +78,7 @@ class CommentController(
 
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(
-                todoService.createComment(
+                commentService.createComment(
                     todoId = todoId,
                     userId = userId,
                     request = request
@@ -93,7 +93,7 @@ class CommentController(
     ): ResponseEntity<CommentDto> {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(
-                todoService.createComment(
+                commentService.createComment(
                     todoId,
                     request
                 )
@@ -109,7 +109,7 @@ class CommentController(
     ): ResponseEntity<CommentDto> {
         return ResponseEntity.status(HttpStatus.OK)
             .body(
-                todoService.updateComment(
+                commentService.updateComment(
                     todoId = todoId,
                     commentId = commentId,
                     userId = userId,
@@ -123,9 +123,9 @@ class CommentController(
         @PathVariable("todo_id") todoId: Long,
         @PathVariable("comment_id") commentId: Long,
         @ModelAttribute("userId") userId: Long?,
-        @RequestBody request: CommentDeleteWithPasswordDto? = null,
+        @RequestBody(required = false) request: CommentDeleteWithPasswordDto? = null,
     ): ResponseEntity<Unit> {
-        todoService.deleteComment(
+        commentService.deleteComment(
             todoId = todoId,
             commentId = commentId,
             userId = userId,

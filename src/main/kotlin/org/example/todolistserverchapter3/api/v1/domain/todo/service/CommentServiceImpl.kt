@@ -72,9 +72,9 @@ class CommentServiceImpl(
         )
 
         if (userId == null) {
-            if (!comment.isOwner(request.password ?: "")) throw NoPermissionException()
+            if (!comment.hasPermission(request.password ?: "")) throw NoPermissionException()
         } else {
-            if (!comment.isOwner(userService.getUserProfile(userId))) throw NoPermissionException()
+            if (!comment.hasPermission(userService.getUserProfile(userId))) throw NoPermissionException()
         }
 
         comment.content = request.content
@@ -90,9 +90,9 @@ class CommentServiceImpl(
         )
 
         if (userId == null) {
-            if (!comment.isOwner(request?.password ?: "")) throw NoPermissionException()
+            if (!comment.hasPermission(request?.password ?: "")) throw NoPermissionException()
         } else {
-            if (!comment.isOwner(userService.getUserProfile(userId))) throw NoPermissionException()
+            if (!comment.hasPermission(userService.getUserProfile(userId))) throw NoPermissionException()
         }
 
         commentRepository.delete(comment)

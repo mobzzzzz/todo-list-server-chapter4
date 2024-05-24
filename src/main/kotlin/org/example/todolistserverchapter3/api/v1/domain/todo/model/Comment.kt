@@ -5,7 +5,6 @@ import org.example.todolistserverchapter3.api.v1.domain.todo.dto.comment.Comment
 import org.example.todolistserverchapter3.api.v1.domain.todo.dto.comment.CommentCreateWithUserDto
 import org.example.todolistserverchapter3.api.v1.domain.todo.model.status.CommentStatus
 import org.example.todolistserverchapter3.api.v1.domain.user.dto.UserDto
-import org.example.todolistserverchapter3.api.v1.domain.user.model.User
 import org.example.todolistserverchapter3.api.v1.domain.user.model.UserRole
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.SQLDelete
@@ -53,11 +52,11 @@ class Comment(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
 
-    fun isOwner(password: String): Boolean {
+    fun hasPermission(password: String): Boolean {
         return this.password == password
     }
 
-    fun isOwner(user: UserDto): Boolean {
+    fun hasPermission(user: UserDto): Boolean {
         return UserRole.valueOf(user.role) == UserRole.Admin || this.userId == user.id
     }
 

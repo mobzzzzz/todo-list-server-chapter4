@@ -35,30 +35,27 @@ TODO List API 서버
 # 패키지 구조
 
 ```
-todolistserverchapter3
-├── api
-    └── v1
-        ├── domain
-        │   ├── comment
-        │   │   ├── dto
-        │   │   ├── model
-        │   │   ├── controller
-        │   │   ├── repository
-        │   │   └── service
-        │   ├── todo
-        │   │   ├── dto
-        │   │   ├── model
-        │   │   ├── controller
-        │   │   ├── repository
-        │   │   └── service
-        │   └── user
-        │       ├── dto
-        │       ├── model
-        │       ├── controller
-        │       ├── repository
-        │       └── service
-        ├── exception
-        └── infra
+org.example.todolistserverchapter3
+└── api.v1
+    └── domain
+        ├── todo
+        │   ├── controller
+        │   ├── dto
+        │   ├── model
+        │   ├── query
+        │   ├── repository
+        │   └── service
+        ├── user
+        │   ├── controller
+        │   ├── dto
+        │   ├── model
+        │   ├── repository
+        │   └── service
+    ├── ApiV1MappingConfig
+    └── exception
+    └── infra.swagger
+    └── util
+└── security
 ```
 
 - dto 패키지는 클라이언트-서버 API 통신에 필요한 데이터 전송 객체를 담고 있습니다.<br/>
@@ -66,6 +63,11 @@ todolistserverchapter3
 - controller 패키지는 클라이언트의 요청을 받아 처리하는 Rest API 컨트롤러를 담고 있습니다.
 - repository 패키지는 DB와 직접적으로 통신하는 JpaRepository 인터페이스를 담고 있습니다.
 - service 패키지는 비즈니스 로직을 처리하는 서비스 인터페이스와 구현체를 담고 있습니다.
+- query 패키지는 Query parameter에 사용하는 enum을 담고 있습니다.
+- exception 패키지는 예외 처리를 위한 커스텀 예외 클래스를 담고 있습니다.
+- swagger 패키지는 Swagger 설정을 담고 있습니다.
+- util 패키지는 유틸리티 클래스를 담고 있습니다.
+- security 패키지는 Spring security에 관련된 클래스를 담고 있습니다.
 
 ## [/api/v1 package로 이동](src/main/kotlin/org/example/todolistserverchapter3/api/v1)
 
@@ -76,6 +78,8 @@ DDD 설계에 의거해 작성되었습니다.
 - **Controller**: 클라이언트의 요청을 받아 DTO로 변환하고 비즈니스 로직을 수행할 적절한 Service에 요청을 보냅니다.
 - **Service**: 필요한 데이터를 Repository에 요청하여 가져와 비즈니스 로직을 처리하고 요청에 맞는 Dto를 반환합니다.
 - **Repository**: DB와 통신해 Entity를 관리하며 Service의 요청에 맞는 데이터를 가져와 반환합니다.
+
+다른 Aggregate에 대해서는 Repository는 참조하지 않고 service를 의존합니다.
 
 ```plaintext
      Client
@@ -117,15 +121,29 @@ class TodoController(
 ) : ApiV1MappingConfig() {
 
     @GetMapping
-    fun getTodoList(@RequestParam(defaultValue = "created_at_asc") sort: TodoSort): ResponseEntity<List<TodoDto>> {
-        return ResponseEntity.status(HttpStatus.OK).body(todoService.getTodoList(sort))
+    fun getTodoList(
+        @RequestParam(defaultValue = "created_at_asc") sort: TodoSort,
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "10") size: Int,
+        @RequestParam(required = false) userIds: List<Long>? = null,
+    ): ResponseEntity<Page<TodoDto>> {
+        val pageable: Pageable = PageRequest.of(page, size, sort.convertToSort())
+
+        return /*...*/
     }
 
     /*...*/
 
     @PostMapping
-    fun createTodo(@RequestBody request: TodoCreateDto): ResponseEntity<TodoDto> {
-        return ResponseEntity.status(HttpStatus.CREATED).body(todoService.createTodo(request))
+    fun createTodo(
+        @Valid @RequestBody request: TodoCreateDto,
+        @ModelAttribute("userId") userId: Long?
+    ): ResponseEntity<TodoDto> {
+        if (userId == null) {
+            throw NotAuthorizedException()
+        }
+
+        return /*...*/
     }
 
     /*...*/
@@ -139,42 +157,54 @@ class TodoController(
 @Service
 class TodoServiceImpl(
     val todoRepository: TodoRepository,
-    val userRepository: UserRepository,
-) : TodoService {
-    override fun getTodoList(sort: TodoSort): List<TodoDto> {
-        val todos = todoRepository.findAll(
-            Sort.by(
-                when (sort) {
-                    TodoSort.CreatedAtDesc -> Sort.Direction.DESC
-                    TodoSort.CreatedAtAsc -> Sort.Direction.ASC
-                },
-                "created_at"
-            )
-        )
+    val commentRepository: CommentRepository,
 
-        return todos.map { it.toDto() }
+    val userService: UserService
+) : TodoService {
+    
+    override fun getTodoList(userIds: List<Long>?, pageable: Pageable): Page<TodoDto> {
+        val todos = if (userIds != null) {
+            todoRepository.findByUserIdIn(userIds, pageable)
+        } else {
+            todoRepository.findAll(pageable)
+        }
+
+        val userDtos = todos.map { it.userId }.distinct().let { userService.getUserProfiles(it) }
+
+        return todos.map { DtoConverter.convertToTodoDto(todo = it, userDto = userDtos[it.userId.toInt()]) }
     }
     
     /*...*/
 
     @Transactional
-    override fun createTodo(request: TodoCreateDto): TodoDto {
-        val user = userRepository.findByIdOrNull(request.userId) ?: throw ModelNotFoundException(
-            "User not found",
-            request.userId
-        )
-        return todoRepository.save(
-            Todo(
-                title = request.title,
-                description = request.description,
-                user = user
+    override fun createTodo(userId: Long, request: TodoCreateDto): TodoDto {
+        val todo = todoRepository.save(
+            Todo.fromDto(
+                request = request,
+                userId = userId
             )
-        ).toDto()
+        )
+
+        val userDto = userService.getUserProfile(todo.userId)
+
+        return DtoConverter.convertToTodoDto(todo = todo, userDto = userDto)
     }
     
     /*...*/
 }
 ```
+</details>
+
+<br/>
+
+<details><summary>Todo Repository 예시</summary>
+
+```kotlin
+interface TodoRepository : JpaRepository<Todo, Long> {
+    fun findByUserIdIn(userIds: List<Long>, pageable: Pageable = Pageable.unpaged()): Page<Todo>
+}
+```
+
 </details>
 
 <br/>
@@ -187,7 +217,16 @@ class TodoServiceImpl(
 @SQLRestriction("status != 'Deleted'")
 @SQLDelete(sql = "UPDATE todo SET status = 'Deleted', deleted_at = NOW() WHERE id = ?")
 class Todo(
-    /*...*/
+    @Column(name = "title")
+    var title: String,
+
+    @Column(name = "description")
+    var description: String? = null,
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    var status: TodoStatus = TodoStatus.Alive,
+
     @Enumerated(EnumType.STRING)
     @Column(name = "card_status")
     var cardStatus: TodoCardStatus = TodoCardStatus.NotStarted,
@@ -203,12 +242,33 @@ class Todo(
     @Column(name = "deleted_at")
     var deletedAt: LocalDateTime? = null,
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
-    val user: User
-) 
+    @Column(name = "user_id")
+    val userId: Long
+) {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Long? = null
 
-/*...*/
+    fun hasPermission(user: UserDto): Boolean {
+        return UserRole.valueOf(user.role) == UserRole.Admin || this.userId == user.id
+    }
+
+    private fun validate() {
+        require(title.isNotBlank()) { "Title cannot be blank" }
+        require(title.length <= 100) { "Title must be 100 characters or less" }
+        require(this.description != null && this.description!!.length <= 1000) { "Description must be 1000 characters or less" }
+    }
+
+    companion object {
+        fun fromDto(request: TodoCreateDto, userId: Long): Todo {
+            return Todo(
+                title = request.title,
+                description = request.description,
+                userId = userId
+            ).apply { this.validate() }
+        }
+    }
+}
 ```
 </details>
 

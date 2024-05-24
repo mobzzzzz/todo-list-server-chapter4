@@ -26,7 +26,7 @@ class CommentController(
     @GetMapping
     fun getCommentList(
         @PathVariable("todo_id") todoId: Long,
-        @RequestParam(defaultValue = "created_at_asc") sort: CommentSort,
+        @RequestParam(defaultValue = "createdAtAsc") sort: CommentSort,
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "10") size: Int,
         @ModelAttribute("userId") userId: Long?

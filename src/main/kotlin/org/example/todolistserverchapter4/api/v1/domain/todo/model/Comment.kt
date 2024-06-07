@@ -4,9 +4,7 @@ import jakarta.persistence.*
 import org.example.todolistserverchapter4.api.v1.domain.todo.dto.comment.CommentCreateWithNamePasswordDto
 import org.example.todolistserverchapter4.api.v1.domain.todo.dto.comment.CommentCreateWithUserDto
 import org.example.todolistserverchapter4.api.v1.domain.todo.model.status.CommentStatus
-import org.example.todolistserverchapter4.api.v1.domain.user.dto.UserDto
 import org.example.todolistserverchapter4.api.v1.domain.user.model.User
-import org.example.todolistserverchapter4.api.v1.domain.user.model.UserRole
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.SQLDelete
 import org.hibernate.annotations.SQLRestriction
@@ -55,10 +53,6 @@ class Comment(
 
     fun hasPermission(password: String): Boolean {
         return this.password == password
-    }
-
-    fun hasPermission(user: UserDto): Boolean {
-        return UserRole.valueOf(user.role) == UserRole.Admin || this.userId == user.id
     }
 
     private fun validate() {

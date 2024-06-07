@@ -76,7 +76,7 @@ class CommentServiceImpl(
         )
 
         if (
-            SecurityUtils.hasPermission(comment.user?.id)
+            !SecurityUtils.hasPermission(comment.user?.id)
             || comment.hasPermission(request.password ?: "")
         ) {
             throw NoPermissionException()
@@ -95,7 +95,7 @@ class CommentServiceImpl(
         )
 
         if (
-            SecurityUtils.hasPermission(comment.user?.id)
+            !SecurityUtils.hasPermission(comment.user?.id)
             || comment.hasPermission(request?.password ?: "")
         ) {
             throw NoPermissionException()

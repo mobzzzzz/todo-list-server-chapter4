@@ -1,7 +1,6 @@
 package org.example.todolistserverchapter4.api.v1.domain.todo.controller
 
 import jakarta.validation.Valid
-import org.example.todolistserverchapter4.api.v1.domain.ApiV1MappingConfig
 import org.example.todolistserverchapter4.api.v1.domain.todo.dto.comment.*
 import org.example.todolistserverchapter4.api.v1.domain.todo.query.CommentSort
 import org.example.todolistserverchapter4.api.v1.domain.todo.query.convertToSort
@@ -15,11 +14,11 @@ import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/todos/{todo_id}/comments")
+@RequestMapping("/api/v1/todos/{todo_id}/comments")
 @Validated
 class CommentController(
     val commentService: CommentService
-) : ApiV1MappingConfig() {
+) {
 
     @GetMapping
     fun getCommentList(

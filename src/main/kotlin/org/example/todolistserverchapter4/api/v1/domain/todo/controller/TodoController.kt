@@ -1,7 +1,6 @@
 package org.example.todolistserverchapter4.api.v1.domain.todo.controller
 
 import jakarta.validation.Valid
-import org.example.todolistserverchapter4.api.v1.domain.ApiV1MappingConfig
 import org.example.todolistserverchapter4.api.v1.domain.todo.dto.TodoCreateDto
 import org.example.todolistserverchapter4.api.v1.domain.todo.dto.TodoDto
 import org.example.todolistserverchapter4.api.v1.domain.todo.dto.TodoUpdateCardStatusDto
@@ -19,11 +18,11 @@ import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/todos")
+@RequestMapping("/api/v1/todos")
 @Validated
 class TodoController(
     private val todoService: TodoService
-) : ApiV1MappingConfig() {
+) {
 
     @GetMapping
     fun getTodoList(

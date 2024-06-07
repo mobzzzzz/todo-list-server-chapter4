@@ -1,7 +1,6 @@
 package org.example.todolistserverchapter4.api.v1.domain.user.controller
 
 import jakarta.validation.Valid
-import org.example.todolistserverchapter4.api.v1.domain.ApiV1MappingConfig
 import org.example.todolistserverchapter4.api.v1.domain.user.dto.*
 import org.example.todolistserverchapter4.api.v1.domain.user.service.UserService
 import org.springframework.http.HttpStatus
@@ -10,10 +9,11 @@ import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 
 @RestController
+@RequestMapping("/api/v1")
 @Validated
 class UserController(
     val userService: UserService
-) : ApiV1MappingConfig() {
+) {
 
     @PostMapping("/signup")
     fun signUp(

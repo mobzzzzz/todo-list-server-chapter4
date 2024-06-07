@@ -30,40 +30,47 @@ class TodoServiceImpl(
             todoRepository.findAll(pageable)
         }
 
-        val users = todos.map { it.userId }.distinct().let { userRepository.findAllById(it) }
+        val users = todos.map { it.user.id }.distinct().let { userRepository.findAllById(it) }
 
-        return todos.map { TodoDto.from(todo = it, user = users[it.userId.toInt()]) }
+        return todos.map { TodoDto.from(todo = it, user = users[it.user.id!!.toInt()]) }
     }
 
     override fun getTodo(todoId: Long): TodoDto {
         val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
         val comments = commentRepository.findByTodoId(todoId)
         val user =
-            userRepository.findByIdOrNull(todo.userId) ?: throw ModelNotFoundException("User not found", todo.userId)
+            userRepository.findByIdOrNull(todo.user.id) ?: throw ModelNotFoundException(
+                "User not found",
+                todo.user.id!!
+            )
 
         return TodoDto.from(todo = todo, user = user, comments = comments.content)
     }
 
     @Transactional
-    override fun createTodo(userId: Long, request: TodoCreateDto): TodoDto {
+    override fun createTodo(request: TodoCreateDto): TodoDto {
+        val user =
+            userRepository.findByIdOrNull(TODO()) ?: throw ModelNotFoundException("User not found", TODO())
         val todo = todoRepository.save(
             Todo.fromDto(
                 request = request,
-                userId = userId
+                user = user
             )
         )
 
-        val user =
-            userRepository.findByIdOrNull(todo.userId) ?: throw ModelNotFoundException("User not found", todo.userId)
+
 
         return TodoDto.from(todo = todo, user = user)
     }
 
     @Transactional
-    override fun updateTodo(todoId: Long, userId: Long, request: TodoUpdateDto): TodoDto {
+    override fun updateTodo(todoId: Long, request: TodoUpdateDto): TodoDto {
         val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
         val user =
-            userRepository.findByIdOrNull(todo.userId) ?: throw ModelNotFoundException("User not found", todo.userId)
+            userRepository.findByIdOrNull(todo.user.id) ?: throw ModelNotFoundException(
+                "User not found",
+                todo.user.id!!
+            )
 
         val (title, description) = request
 
@@ -76,10 +83,13 @@ class TodoServiceImpl(
     }
 
     @Transactional
-    override fun updateTodoCardStatus(todoId: Long, userId: Long, request: TodoUpdateCardStatusDto): TodoDto {
+    override fun updateTodoCardStatus(todoId: Long, request: TodoUpdateCardStatusDto): TodoDto {
         val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
         val user =
-            userRepository.findByIdOrNull(todo.userId) ?: throw ModelNotFoundException("User not found", todo.userId)
+            userRepository.findByIdOrNull(todo.user.id) ?: throw ModelNotFoundException(
+                "User not found",
+                todo.user.id!!
+            )
 
         todo.cardStatus = TodoCardStatus.valueOf(request.status)
 
@@ -89,7 +99,7 @@ class TodoServiceImpl(
     }
 
     @Transactional
-    override fun deleteTodo(todoId: Long, userId: Long) {
+    override fun deleteTodo(todoId: Long) {
         val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
 
         val comments = commentRepository.findByTodoId(todoId)

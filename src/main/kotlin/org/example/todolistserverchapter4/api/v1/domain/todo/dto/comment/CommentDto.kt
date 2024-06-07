@@ -16,7 +16,7 @@ data class CommentDto(
             return CommentDto(
                 id = comment.id!!,
                 todoId = comment.todo.id!!,
-                userId = comment.userId,
+                userId = comment.user?.id,
                 content = comment.content,
                 name = comment.userName,
                 status = comment.status.name,

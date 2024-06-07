@@ -4,6 +4,7 @@ import jakarta.persistence.*
 import org.example.todolistserverchapter4.api.v1.domain.todo.dto.TodoCreateDto
 import org.example.todolistserverchapter4.api.v1.domain.todo.model.status.TodoCardStatus
 import org.example.todolistserverchapter4.api.v1.domain.todo.model.status.TodoStatus
+import org.example.todolistserverchapter4.api.v1.domain.user.model.User
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.SQLDelete
 import org.hibernate.annotations.SQLRestriction
@@ -40,8 +41,9 @@ class Todo(
     @Column(name = "deleted_at")
     var deletedAt: LocalDateTime? = null,
 
-    @Column(name = "user_id")
-    val userId: Long
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    val user: User
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,11 +56,11 @@ class Todo(
     }
 
     companion object {
-        fun fromDto(request: TodoCreateDto, userId: Long): Todo {
+        fun fromDto(request: TodoCreateDto, user: User): Todo {
             return Todo(
                 title = request.title,
                 description = request.description,
-                userId = userId
+                user = user
             ).apply { this.validate() }
         }
     }

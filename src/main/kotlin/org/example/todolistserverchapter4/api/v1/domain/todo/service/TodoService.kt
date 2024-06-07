@@ -29,7 +29,7 @@ interface TodoService {
      * @param 생성할 할 일 카드 정보
      * @return 생성된 할 일 카드 정보
      */
-    fun createTodo(userId: Long, request: TodoCreateDto): TodoDto
+    fun createTodo(request: TodoCreateDto): TodoDto
 
     /**
      * 할 일 카드 정보를 수정합니다.
@@ -38,7 +38,7 @@ interface TodoService {
      * @param request: 수정할 할 일 카드 정보
      * @return 수정된 할 일 카드 정보
      */
-    fun updateTodo(todoId: Long, userId: Long, request: TodoUpdateDto): TodoDto
+    fun updateTodo(todoId: Long, request: TodoUpdateDto): TodoDto
 
     /**
      * 할 일 카드의 진행 상태를 수정합니다.
@@ -47,12 +47,12 @@ interface TodoService {
      * @param request: 수정할 할 일 카드 진행 상태
      * @return 수정된 할 일 카드 정보
      */
-    fun updateTodoCardStatus(todoId: Long, userId: Long, request: TodoUpdateCardStatusDto): TodoDto
+    fun updateTodoCardStatus(todoId: Long, request: TodoUpdateCardStatusDto): TodoDto
 
     /**
      * 할 일 카드를 삭제합니다.
      *
      * @param 할 일 카드 ID
      */
-    fun deleteTodo(todoId: Long, userId: Long)
+    fun deleteTodo(todoId: Long)
 }

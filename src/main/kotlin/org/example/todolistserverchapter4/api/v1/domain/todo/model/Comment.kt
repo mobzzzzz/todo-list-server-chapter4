@@ -44,8 +44,9 @@ class Comment(
     @JoinColumn(name = "todo_id")
     val todo: Todo,
 
-    @Column(name = "user_id")
-    var userId: Long? = null,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    var user: User? = null,
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -65,7 +66,7 @@ class Comment(
             return Comment(
                 content = request.content,
                 userName = user.profile.nickname,
-                userId = user.id,
+                user = user,
                 todo = todo
             ).apply { validate() }
         }

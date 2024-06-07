@@ -10,7 +10,6 @@ import org.example.todolistserverchapter4.api.v1.domain.todo.model.status.TodoCa
 import org.example.todolistserverchapter4.api.v1.domain.todo.query.TodoSort
 import org.example.todolistserverchapter4.api.v1.domain.todo.query.convertToSort
 import org.example.todolistserverchapter4.api.v1.domain.todo.service.TodoService
-import org.example.todolistserverchapter4.api.v1.exception.NotAuthorizedException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -57,16 +56,10 @@ class TodoController(
     @PostMapping
     fun createTodo(
         @Valid @RequestBody request: TodoCreateDto,
-        @ModelAttribute("userId") userId: Long?
     ): ResponseEntity<TodoDto> {
-        if (userId == null) {
-            throw NotAuthorizedException()
-        }
-
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(
                 todoService.createTodo(
-                    userId = userId,
                     request = request
                 )
             )
@@ -76,17 +69,11 @@ class TodoController(
     fun updateTodo(
         @PathVariable("todo_id") todoId: Long,
         @Valid @RequestBody request: TodoUpdateDto,
-        @ModelAttribute("userId") userId: Long?
     ): ResponseEntity<TodoDto> {
-        if (userId == null) {
-            throw NotAuthorizedException()
-        }
-
         return ResponseEntity.status(HttpStatus.OK)
             .body(
                 todoService.updateTodo(
                     todoId = todoId,
-                    userId = userId,
                     request = request
                 )
             )
@@ -96,12 +83,7 @@ class TodoController(
     fun updateTodoCardStatus(
         @PathVariable("todo_id") todoId: Long,
         @Valid @RequestBody request: TodoUpdateCardStatusDto,
-        @ModelAttribute("userId") userId: Long?
     ): ResponseEntity<TodoDto> {
-        if (userId == null) {
-            throw NotAuthorizedException()
-        }
-
         if (!TodoCardStatus.entries.map { it.name }.contains(request.status)) {
             throw IllegalArgumentException("Invalid card status ${request.status}")
         }
@@ -110,7 +92,6 @@ class TodoController(
             .body(
                 todoService.updateTodoCardStatus(
                     todoId = todoId,
-                    userId = userId,
                     request = request
                 )
             )
@@ -119,13 +100,8 @@ class TodoController(
     @DeleteMapping("/{todo_id}")
     fun deleteTodo(
         @PathVariable("todo_id") todoId: Long,
-        @ModelAttribute("userId") userId: Long?
     ): ResponseEntity<Unit> {
-        if (userId == null) {
-            throw NotAuthorizedException()
-        }
-
-        todoService.deleteTodo(todoId = todoId, userId = userId)
+        todoService.deleteTodo(todoId = todoId)
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }

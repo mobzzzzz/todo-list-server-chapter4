@@ -12,7 +12,7 @@ interface CommentService {
      * @param pageable: 페이지, 정렬 정보
      * @return 댓글 목록
      */
-    fun getCommentList(todoId: Long, userId: Long, pageable: Pageable): Page<CommentDto>
+    fun getCommentList(todoId: Long, pageable: Pageable): Page<CommentDto>
 
     /**
      * 단일 댓글을 조회합니다.
@@ -21,7 +21,7 @@ interface CommentService {
      * @param commentId: 댓글 ID
      * @return 댓글 정보
      */
-    fun getComment(todoId: Long, commentId: Long, userId: Long): CommentDto
+    fun getComment(todoId: Long, commentId: Long): CommentDto
 
     /**
      * 로그인 된 유저의 댓글을 생성합니다.
@@ -30,7 +30,7 @@ interface CommentService {
      * @param request: 댓글 생성 요청 정보
      * @return 생성된 댓글 정보
      */
-    fun createComment(todoId: Long, userId: Long, request: CommentCreateWithUserDto): CommentDto
+    fun createComment(todoId: Long, request: CommentCreateWithUserDto): CommentDto
 
     /**
      * 익명 유저의 댓글을 생성합니다.
@@ -49,7 +49,7 @@ interface CommentService {
      * @param request: 댓글 수정 요청 정보
      * @return 수정된 댓글 정보
      */
-    fun updateComment(todoId: Long, commentId: Long, userId: Long?, request: CommentUpdateDto): CommentDto
+    fun updateComment(todoId: Long, commentId: Long, request: CommentUpdateDto): CommentDto
 
     /**
      * 댓글을 삭제합니다.
@@ -57,5 +57,5 @@ interface CommentService {
      * @param todoId: 할 일 카드 ID
      * @param commentId: 댓글 ID
      */
-    fun deleteComment(todoId: Long, commentId: Long, userId: Long?, request: CommentDeleteWithPasswordDto?)
+    fun deleteComment(todoId: Long, commentId: Long, request: CommentDeleteWithPasswordDto?)
 }

@@ -21,7 +21,7 @@ data class TodoDto(
         fun from(todo: Todo, user: User, comments: List<Comment> = emptyList()): TodoDto {
             return TodoDto(
                 id = todo.id!!,
-                userId = todo.userId,
+                userId = user.id!!,
                 nickname = user.profile.nickname,
                 title = todo.title,
                 description = todo.description,

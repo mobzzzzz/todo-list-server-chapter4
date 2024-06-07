@@ -1,6 +1,8 @@
 TODO List API 서버
 ===
-# 📝 프로젝트 소개 
+
+# 📝 프로젝트 소개
+
 - Spring Framework 기반으로 할 일 카드를 관리하는 REST API 서버입니다.
 
 <h2>목차</h2>
@@ -12,7 +14,6 @@ TODO List API 서버
 > - [⚙️ 주요 기능](#주요-기능)
 > - [💻 개발 환경](#개발-환경)
 
-
 # [API 명세서](https://mobzz.notion.site/1c3b0b6d379f4d5aa93d4ebc058ecd12?v=3c5b824e364e4112b4865b03a336dd05&pvs=74)
 
 <details><summary>Use case diagram</summary>
@@ -22,8 +23,8 @@ TODO List API 서버
 </details>
 
 ## 일부 요약
-![api_spec_summary.png](api_spec_summary.png)
 
+![api_spec_summary.png](api_spec_summary.png)
 
 # [ERD Cloud](https://www.erdcloud.com/d/8JmKdknxC3JsBpzEe)
 
@@ -31,11 +32,10 @@ TODO List API 서버
 
 ![erd_cloud.png](erd_cloud.png)
 
-
 # 패키지 구조
 
 ```
-org.example.todolistserverchapter3
+org.example.todolistserverchapter4
 └── api.v1
     └── domain
         ├── todo
@@ -69,7 +69,7 @@ org.example.todolistserverchapter3
 - util 패키지는 유틸리티 클래스를 담고 있습니다.
 - security 패키지는 Spring security에 관련된 클래스를 담고 있습니다.
 
-## [/api/v1 package로 이동](src/main/kotlin/org/example/todolistserverchapter3/api/v1)
+## [/api/v1 package로 이동](src/main/kotlin/org/example/todolistserverchapter4/api/v1)
 
 # 통신 흐름
 
@@ -149,6 +149,7 @@ class TodoController(
     /*...*/
 }
 ```
+
 </details>
 <br/>
 <details><summary>Todo Service 예시</summary>
@@ -193,6 +194,7 @@ class TodoServiceImpl(
     /*...*/
 }
 ```
+
 </details>
 
 <br/>
@@ -270,6 +272,7 @@ class Todo(
     }
 }
 ```
+
 </details>
 
 # 개발 환경

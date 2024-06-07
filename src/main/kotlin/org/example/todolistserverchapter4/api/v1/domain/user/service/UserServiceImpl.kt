@@ -6,6 +6,7 @@ import org.example.todolistserverchapter4.api.v1.domain.user.model.User
 import org.example.todolistserverchapter4.api.v1.domain.user.repository.UserRepository
 import org.example.todolistserverchapter4.api.v1.exception.ModelNotFoundException
 import org.example.todolistserverchapter4.api.v1.exception.NoPermissionException
+import org.example.todolistserverchapter4.api.v1.infra.security.SecurityUtils
 import org.example.todolistserverchapter4.api.v1.infra.security.jwt.JwtPlugin
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -46,16 +47,16 @@ class UserServiceImpl(
     override fun getUserProfile(userId: Long): UserDto {
         val user = userRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User not found", userId)
 
-        return UserDto.from(user)
-    }
+        if (!SecurityUtils.hasPermission(user.id!!)) throw NoPermissionException()
 
-    override fun getUserProfiles(userIds: List<Long>): List<UserDto> {
-        return userRepository.findAllById(userIds).map { UserDto.from(it) }
+        return UserDto.from(user)
     }
 
     @Transactional
     override fun updateUserProfile(userId: Long, request: UserUpdateProfileDto): UserDto {
         val user = userRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User not found", userId)
+
+        if (!SecurityUtils.hasPermission(user.id!!)) throw NoPermissionException()
 
         user.updateProfile(Profile(nickname = request.nickname))
 
@@ -65,6 +66,8 @@ class UserServiceImpl(
     @Transactional
     override fun deactivate(userId: Long) {
         val user = userRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User not found", userId)
+
+        if (!SecurityUtils.hasPermission(user.id!!)) throw NoPermissionException()
 
         userRepository.delete(user)
     }

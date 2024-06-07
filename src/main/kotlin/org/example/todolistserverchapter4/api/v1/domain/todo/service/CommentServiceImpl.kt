@@ -6,6 +6,8 @@ import org.example.todolistserverchapter4.api.v1.domain.todo.repository.CommentR
 import org.example.todolistserverchapter4.api.v1.domain.todo.repository.TodoRepository
 import org.example.todolistserverchapter4.api.v1.domain.user.repository.UserRepository
 import org.example.todolistserverchapter4.api.v1.exception.ModelNotFoundException
+import org.example.todolistserverchapter4.api.v1.exception.NoPermissionException
+import org.example.todolistserverchapter4.api.v1.infra.security.SecurityUtils
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
@@ -33,11 +35,12 @@ class CommentServiceImpl(
 
     @Transactional
     override fun createComment(todoId: Long, request: CommentCreateWithUserDto): CommentDto {
+        val currentUserId = SecurityUtils.getCurrentUserIdOrNull() ?: throw NoPermissionException()
         val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
-        val user =
-            userRepository.findByIdOrNull(todo.user.id) ?: throw ModelNotFoundException(
+        val user = userRepository.findByIdOrNull(currentUserId)
+            ?: throw ModelNotFoundException(
                 "User not found",
-                todo.user.id!!
+                currentUserId
             )
 
         return CommentDto.from(
@@ -72,9 +75,12 @@ class CommentServiceImpl(
             commentId
         )
 
-//        if (userId == null) {
-//            if (!comment.hasPermission(request.password ?: "")) throw NoPermissionException()
-//        }
+        if (
+            SecurityUtils.hasPermission(comment.user?.id)
+            || comment.hasPermission(request.password ?: "")
+        ) {
+            throw NoPermissionException()
+        }
 
         comment.content = request.content
 
@@ -88,9 +94,12 @@ class CommentServiceImpl(
             commentId
         )
 
-//        if (userId == null) {
-//            if (!comment.hasPermission(request?.password ?: "")) throw NoPermissionException()
-//        }
+        if (
+            SecurityUtils.hasPermission(comment.user?.id)
+            || comment.hasPermission(request?.password ?: "")
+        ) {
+            throw NoPermissionException()
+        }
 
         commentRepository.delete(comment)
     }

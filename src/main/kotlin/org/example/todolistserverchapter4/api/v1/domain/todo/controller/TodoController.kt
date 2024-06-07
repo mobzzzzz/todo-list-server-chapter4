@@ -26,7 +26,7 @@ class TodoController(
 
     @GetMapping
     fun getTodoList(
-        @RequestParam(defaultValue = "createdAtAsc") sort: TodoSort,
+        @RequestParam(defaultValue = "CreatedAtAsc") sort: TodoSort,
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "10") size: Int,
         @RequestParam(required = false) userIds: List<Long>? = null,

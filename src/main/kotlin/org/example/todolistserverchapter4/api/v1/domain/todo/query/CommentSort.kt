@@ -9,7 +9,7 @@ enum class CommentSort {
 
 fun CommentSort.convertToSort(): Sort {
     return when (this) {
-        CommentSort.CreatedAtAsc -> Sort.by("created_at").ascending()
-        CommentSort.CreatedAtDesc -> Sort.by("created_at").descending()
+        CommentSort.CreatedAtAsc -> Sort.by("createdAt").ascending()
+        CommentSort.CreatedAtDesc -> Sort.by("createdAt").descending()
     }
 }

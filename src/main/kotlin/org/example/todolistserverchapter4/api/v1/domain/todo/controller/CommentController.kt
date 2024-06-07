@@ -23,7 +23,7 @@ class CommentController(
     @GetMapping
     fun getCommentList(
         @PathVariable("todo_id") todoId: Long,
-        @RequestParam(defaultValue = "createdAtAsc") sort: CommentSort,
+        @RequestParam(defaultValue = "CreatedAtAsc") sort: CommentSort,
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "10") size: Int,
     ): ResponseEntity<Page<CommentDto>> {

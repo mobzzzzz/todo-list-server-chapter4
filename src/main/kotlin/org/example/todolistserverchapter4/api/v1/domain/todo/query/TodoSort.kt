@@ -12,8 +12,8 @@ enum class TodoSort {
 
 fun TodoSort.convertToSort(): Sort {
     return when (this) {
-        CreatedAtAsc -> Sort.by("created_at").ascending()
-        CreatedAtDesc -> Sort.by("created_at").descending()
+        CreatedAtAsc -> Sort.by("createdAt").ascending()
+        CreatedAtDesc -> Sort.by("createdAt").descending()
         TitleAsc -> Sort.by("title").ascending()
         TitleDesc -> Sort.by("title").descending()
     }

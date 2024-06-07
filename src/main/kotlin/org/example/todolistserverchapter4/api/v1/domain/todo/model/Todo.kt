@@ -4,8 +4,6 @@ import jakarta.persistence.*
 import org.example.todolistserverchapter4.api.v1.domain.todo.dto.TodoCreateDto
 import org.example.todolistserverchapter4.api.v1.domain.todo.model.status.TodoCardStatus
 import org.example.todolistserverchapter4.api.v1.domain.todo.model.status.TodoStatus
-import org.example.todolistserverchapter4.api.v1.domain.user.dto.UserDto
-import org.example.todolistserverchapter4.api.v1.domain.user.model.UserRole
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.SQLDelete
 import org.hibernate.annotations.SQLRestriction
@@ -48,10 +46,6 @@ class Todo(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
-
-    fun hasPermission(user: UserDto): Boolean {
-        return UserRole.valueOf(user.role) == UserRole.Admin || this.userId == user.id
-    }
 
     private fun validate() {
         require(title.isNotBlank()) { "Title cannot be blank" }

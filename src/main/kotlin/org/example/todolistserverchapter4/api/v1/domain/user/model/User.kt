@@ -41,10 +41,6 @@ class User(
         this.profile = profile
     }
 
-    fun hasPermission(user: User): Boolean {
-        return this.id == user.id || this.role == UserRole.Admin
-    }
-
     private fun validate() {
         require(email.isNotBlank()) { "Email cannot be blank" }
         require(password.length in 8..20) { "Password must be between 8 and 20 characters" }

@@ -1,9 +1,6 @@
 package org.example.todolistserverchapter4.api.v1.domain.user.service
 
-import org.example.todolistserverchapter4.api.v1.domain.user.dto.SignInDto
-import org.example.todolistserverchapter4.api.v1.domain.user.dto.SignUpDto
-import org.example.todolistserverchapter4.api.v1.domain.user.dto.UserDto
-import org.example.todolistserverchapter4.api.v1.domain.user.dto.UserUpdateProfileDto
+import org.example.todolistserverchapter4.api.v1.domain.user.dto.*
 
 interface UserService {
 
@@ -21,7 +18,7 @@ interface UserService {
      * @param 로그인 요청 정보
      * @return 로그인한 유저 정보
      */
-    fun signIn(request: SignInDto): UserDto
+    fun signIn(request: SignInDto): SignInResponseDto
 
     /**
      * 유저의 프로필 정보를 조회합니다.
@@ -40,12 +37,12 @@ interface UserService {
      * @param request: 수정할 프로필 정보
      * @return 수정된 유저의 프로필 정보
      */
-    fun updateUserProfile(userId: Long, currentUserId: Long, request: UserUpdateProfileDto): UserDto
+    fun updateUserProfile(userId: Long, request: UserUpdateProfileDto): UserDto
 
     /**
      * 회원 탈퇴를 진행합니다.
      *
      * @param 탈퇴할 유저 ID
      */
-    fun deactivate(userId: Long, currentUserId: Long)
+    fun deactivate(userId: Long)
 }

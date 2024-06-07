@@ -4,10 +4,9 @@ import org.example.todolistserverchapter4.api.v1.domain.todo.dto.comment.*
 import org.example.todolistserverchapter4.api.v1.domain.todo.model.Comment
 import org.example.todolistserverchapter4.api.v1.domain.todo.repository.CommentRepository
 import org.example.todolistserverchapter4.api.v1.domain.todo.repository.TodoRepository
-import org.example.todolistserverchapter4.api.v1.domain.user.service.UserService
+import org.example.todolistserverchapter4.api.v1.domain.user.repository.UserRepository
 import org.example.todolistserverchapter4.api.v1.exception.ModelNotFoundException
 import org.example.todolistserverchapter4.api.v1.exception.NoPermissionException
-import org.example.todolistserverchapter4.api.v1.util.DtoConverter
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
@@ -18,11 +17,10 @@ import org.springframework.transaction.annotation.Transactional
 class CommentServiceImpl(
     val todoRepository: TodoRepository,
     val commentRepository: CommentRepository,
-
-    val userService: UserService
+    val userRepository: UserRepository
 ) : CommentService {
     override fun getCommentList(todoId: Long, userId: Long, pageable: Pageable): Page<CommentDto> {
-        return commentRepository.findByTodoId(todoId, pageable).map { DtoConverter.convertToCommentDto(it) }
+        return commentRepository.findByTodoId(todoId, pageable).map { CommentDto.from(it) }
     }
 
     override fun getComment(todoId: Long, commentId: Long, userId: Long): CommentDto {
@@ -31,20 +29,21 @@ class CommentServiceImpl(
             todoId
         )
 
-        return DtoConverter.convertToCommentDto(comment)
+        return CommentDto.from(comment)
     }
 
     @Transactional
     override fun createComment(todoId: Long, userId: Long, request: CommentCreateWithUserDto): CommentDto {
         val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
-        val userDto = userService.getUserProfile(userId)
+        val userDto =
+            userRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User not found", todo.userId)
 
-        return DtoConverter.convertToCommentDto(
+        return CommentDto.from(
             commentRepository.save(
                 Comment.fromDto(
                     request = request,
                     todo = todo,
-                    userDto = userDto,
+                    user = userDto,
                 )
             )
         )
@@ -54,7 +53,7 @@ class CommentServiceImpl(
     override fun createComment(todoId: Long, request: CommentCreateWithNamePasswordDto): CommentDto {
         val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
 
-        return DtoConverter.convertToCommentDto(
+        return CommentDto.from(
             commentRepository.save(
                 Comment.fromDto(
                     request = request,
@@ -73,13 +72,11 @@ class CommentServiceImpl(
 
         if (userId == null) {
             if (!comment.hasPermission(request.password ?: "")) throw NoPermissionException()
-        } else {
-            if (!comment.hasPermission(userService.getUserProfile(userId))) throw NoPermissionException()
         }
 
         comment.content = request.content
 
-        return DtoConverter.convertToCommentDto(commentRepository.save(comment))
+        return CommentDto.from(comment)
     }
 
     @Transactional
@@ -91,8 +88,6 @@ class CommentServiceImpl(
 
         if (userId == null) {
             if (!comment.hasPermission(request?.password ?: "")) throw NoPermissionException()
-        } else {
-            if (!comment.hasPermission(userService.getUserProfile(userId))) throw NoPermissionException()
         }
 
         commentRepository.delete(comment)

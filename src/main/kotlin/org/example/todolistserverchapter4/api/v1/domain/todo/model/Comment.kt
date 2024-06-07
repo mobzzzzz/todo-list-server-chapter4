@@ -5,6 +5,7 @@ import org.example.todolistserverchapter4.api.v1.domain.todo.dto.comment.Comment
 import org.example.todolistserverchapter4.api.v1.domain.todo.dto.comment.CommentCreateWithUserDto
 import org.example.todolistserverchapter4.api.v1.domain.todo.model.status.CommentStatus
 import org.example.todolistserverchapter4.api.v1.domain.user.dto.UserDto
+import org.example.todolistserverchapter4.api.v1.domain.user.model.User
 import org.example.todolistserverchapter4.api.v1.domain.user.model.UserRole
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.SQLDelete
@@ -66,11 +67,11 @@ class Comment(
     }
 
     companion object {
-        fun fromDto(request: CommentCreateWithUserDto, todo: Todo, userDto: UserDto): Comment {
+        fun fromDto(request: CommentCreateWithUserDto, todo: Todo, user: User): Comment {
             return Comment(
                 content = request.content,
-                userName = userDto.nickname,
-                userId = userDto.id,
+                userName = user.profile.nickname,
+                userId = user.id,
                 todo = todo
             ).apply { validate() }
         }

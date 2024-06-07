@@ -8,10 +8,8 @@ import org.example.todolistserverchapter4.api.v1.domain.todo.model.Todo
 import org.example.todolistserverchapter4.api.v1.domain.todo.model.status.TodoCardStatus
 import org.example.todolistserverchapter4.api.v1.domain.todo.repository.CommentRepository
 import org.example.todolistserverchapter4.api.v1.domain.todo.repository.TodoRepository
-import org.example.todolistserverchapter4.api.v1.domain.user.service.UserService
+import org.example.todolistserverchapter4.api.v1.domain.user.repository.UserRepository
 import org.example.todolistserverchapter4.api.v1.exception.ModelNotFoundException
-import org.example.todolistserverchapter4.api.v1.exception.NoPermissionException
-import org.example.todolistserverchapter4.api.v1.util.DtoConverter
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
@@ -22,8 +20,7 @@ import org.springframework.transaction.annotation.Transactional
 class TodoServiceImpl(
     val todoRepository: TodoRepository,
     val commentRepository: CommentRepository,
-
-    val userService: UserService
+    val userRepository: UserRepository
 ) : TodoService {
 
     override fun getTodoList(userIds: List<Long>?, pageable: Pageable): Page<TodoDto> {
@@ -33,17 +30,18 @@ class TodoServiceImpl(
             todoRepository.findAll(pageable)
         }
 
-        val userDtos = todos.map { it.userId }.distinct().let { userService.getUserProfiles(it) }
+        val users = todos.map { it.userId }.distinct().let { userRepository.findAllById(it) }
 
-        return todos.map { DtoConverter.convertToTodoDto(todo = it, userDto = userDtos[it.userId.toInt()]) }
+        return todos.map { TodoDto.from(todo = it, user = users[it.userId.toInt()]) }
     }
 
     override fun getTodo(todoId: Long): TodoDto {
         val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
         val comments = commentRepository.findByTodoId(todoId)
-        val userDto = userService.getUserProfile(todo.userId)
+        val user =
+            userRepository.findByIdOrNull(todo.userId) ?: throw ModelNotFoundException("User not found", todo.userId)
 
-        return DtoConverter.convertToTodoDto(todo = todo, userDto = userDto, comments = comments.content)
+        return TodoDto.from(todo = todo, user = user, comments = comments.content)
     }
 
     @Transactional
@@ -55,17 +53,17 @@ class TodoServiceImpl(
             )
         )
 
-        val userDto = userService.getUserProfile(todo.userId)
+        val user =
+            userRepository.findByIdOrNull(todo.userId) ?: throw ModelNotFoundException("User not found", todo.userId)
 
-        return DtoConverter.convertToTodoDto(todo = todo, userDto = userDto)
+        return TodoDto.from(todo = todo, user = user)
     }
 
     @Transactional
     override fun updateTodo(todoId: Long, userId: Long, request: TodoUpdateDto): TodoDto {
         val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
-        val userDto = userService.getUserProfile(todo.userId)
-
-        if (!todo.hasPermission(userDto)) throw NoPermissionException()
+        val user =
+            userRepository.findByIdOrNull(todo.userId) ?: throw ModelNotFoundException("User not found", todo.userId)
 
         val (title, description) = request
 
@@ -74,29 +72,25 @@ class TodoServiceImpl(
 
         val updatedTodo = todoRepository.save(todo)
 
-        return DtoConverter.convertToTodoDto(todo = updatedTodo, userDto = userDto)
+        return TodoDto.from(todo = updatedTodo, user = user)
     }
 
     @Transactional
     override fun updateTodoCardStatus(todoId: Long, userId: Long, request: TodoUpdateCardStatusDto): TodoDto {
         val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
-        val userDto = userService.getUserProfile(todo.userId)
-
-        if (!todo.hasPermission(userDto)) throw NoPermissionException()
+        val user =
+            userRepository.findByIdOrNull(todo.userId) ?: throw ModelNotFoundException("User not found", todo.userId)
 
         todo.cardStatus = TodoCardStatus.valueOf(request.status)
 
         val updatedTodo = todoRepository.save(todo)
 
-        return DtoConverter.convertToTodoDto(todo = updatedTodo, userDto = userDto)
+        return TodoDto.from(todo = updatedTodo, user = user)
     }
 
     @Transactional
     override fun deleteTodo(todoId: Long, userId: Long) {
         val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
-        val userDto = userService.getUserProfile(todo.userId)
-
-        if (!todo.hasPermission(userDto)) throw NoPermissionException()
 
         val comments = commentRepository.findByTodoId(todoId)
 

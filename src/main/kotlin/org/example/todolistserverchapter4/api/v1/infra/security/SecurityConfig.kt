@@ -26,6 +26,7 @@ class SecurityConfig(
                 it.requestMatchers(
                     "/api/v1/signin",
                     "/api/v1/signup",
+                    "/api/v1/todos/*/comments/**",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
                 ).permitAll()

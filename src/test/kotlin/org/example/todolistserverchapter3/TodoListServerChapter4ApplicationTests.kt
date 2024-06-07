@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-class TodoListServerChapter3ApplicationTests {
+class TodoListServerChapter4ApplicationTests {
 
     @Test
     fun contextLoads() {

@@ -46,6 +46,8 @@ class User(
 
     fun updateProfile(profile: Profile) {
         this.profile = profile
+
+        this.validate()
     }
 
     private fun validate() {

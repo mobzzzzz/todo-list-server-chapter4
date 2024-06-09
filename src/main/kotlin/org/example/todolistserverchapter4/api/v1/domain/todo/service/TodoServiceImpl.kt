@@ -38,15 +38,17 @@ class TodoServiceImpl(
     }
 
     override fun getTodo(todoId: Long): TodoDto {
-        val todo = todoRepository.find(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
-        val comments = commentRepository.findByTodoId(todoId)
+        val (todo, comments) = todoRepository.findWithComments(todoId)
+
+        if (todo == null) throw ModelNotFoundException("Todo not found", todoId)
+
         val user =
             userRepository.findByIdOrNull(todo.user.id) ?: throw ModelNotFoundException(
                 "User not found",
                 todo.user.id!!
             )
 
-        return TodoDto.from(todo = todo, user = user, comments = comments.content)
+        return TodoDto.from(todo = todo, user = user, comments = comments)
     }
 
     @Transactional

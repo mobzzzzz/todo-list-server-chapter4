@@ -70,7 +70,7 @@ class User(
                 profile = Profile(info.nickname),
                 provider = info.provider.name,
                 providerId = info.id
-            )
+            ).apply { this.validate() }
         }
     }
 }

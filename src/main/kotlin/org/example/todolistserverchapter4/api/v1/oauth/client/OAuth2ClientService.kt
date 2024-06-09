@@ -6,7 +6,7 @@ import org.example.todolistserverchapter4.api.v1.oauth.common.OAuth2Provider
 import org.springframework.stereotype.Service
 
 @Service
-class OAuth2ClientSelector(
+class OAuth2ClientService(
     private val clients: List<OAuth2Client>
 ) {
     fun redirectUrlBy(provider: OAuth2Provider): String {

@@ -23,3 +23,20 @@ auth:
     issuer: team.sparta.com
     secret: PO4c8z41Hia5gJG3oeuFJMRYBB4Ws4aZ
     accessTokenExpirationHour: 168
+
+kakao:
+  client:
+    id: "10fea61c27520fa86be5ee9bb25e158b"
+  redirect:
+    url: "http://localhost:8080/oauth2/kakao/callback"
+  api:
+    auth_url: "https://kauth.kakao.com/oauth/authorize"
+    token_url: "https://kauth.kakao.com/oauth/token"
+    profile_url: "https://kapi.kakao.com/v2/user/me"
+
+naver:
+  client:
+    id: "qWh_rcXFfAta4rJPdMSC"
+    secret: "NlBQNaIMN0"
+  redirect:
+    url: "http://localhost:8080/oauth2/naver/callback"

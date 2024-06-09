@@ -29,6 +29,7 @@ class SecurityConfig(
                     "/api/v1/signin",
                     "/api/v1/signup",
                     "/api/v1/todos/*/comments/**",
+                    "/oauth2/**",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
                 ).permitAll()

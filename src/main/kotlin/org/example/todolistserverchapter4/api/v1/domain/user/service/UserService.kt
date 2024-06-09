@@ -1,6 +1,7 @@
 package org.example.todolistserverchapter4.api.v1.domain.user.service
 
 import org.example.todolistserverchapter4.api.v1.domain.user.dto.*
+import org.example.todolistserverchapter4.api.v1.oauth.client.dto.OAuth2UserInfo
 
 interface UserService {
 
@@ -43,4 +44,6 @@ interface UserService {
      * @param 탈퇴할 유저 ID
      */
     fun deactivate(userId: Long)
+
+    fun registerIfAbsent(it: OAuth2UserInfo): UserDto
 }

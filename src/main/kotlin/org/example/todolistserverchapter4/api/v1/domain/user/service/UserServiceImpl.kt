@@ -8,6 +8,7 @@ import org.example.todolistserverchapter4.api.v1.exception.ModelNotFoundExceptio
 import org.example.todolistserverchapter4.api.v1.exception.NoPermissionException
 import org.example.todolistserverchapter4.api.v1.infra.security.SecurityUtils
 import org.example.todolistserverchapter4.api.v1.infra.security.jwt.JwtPlugin
+import org.example.todolistserverchapter4.api.v1.oauth.client.dto.OAuth2UserInfo
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -70,5 +71,14 @@ class UserServiceImpl(
         if (!SecurityUtils.hasPermission(user.id!!)) throw NoPermissionException()
 
         userRepository.delete(user)
+    }
+
+    @Transactional
+    override fun registerIfAbsent(it: OAuth2UserInfo): UserDto {
+        val user = userRepository.findByProviderAndProviderId(it.provider.name, it.id) ?: run {
+            userRepository.save(User.fromOauth(it, passwordEncoder.encode(it.id)))
+        }
+        
+        return UserDto.from(user)
     }
 }

@@ -38,4 +38,9 @@ class GlobalExceptionHandler {
     fun handleNoPermissionException(e: NoPermissionException): ResponseEntity<ErrorDto> {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorDto(e.message, "105"))
     }
+
+    @ExceptionHandler(Exception::class)
+    fun handleException(ex: Exception): ResponseEntity<String> {
+        return ResponseEntity("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR)
+    }
 }

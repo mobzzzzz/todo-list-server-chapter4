@@ -2,6 +2,7 @@ package org.example.todolistserverchapter4.api.v1.domain.user.model
 
 import jakarta.persistence.*
 import org.example.todolistserverchapter4.api.v1.domain.user.dto.SignUpDto
+import org.example.todolistserverchapter4.api.v1.oauth.client.dto.OAuth2UserInfo
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import java.time.LocalDateTime
@@ -21,6 +22,12 @@ class User(
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     var role: UserRole = UserRole.User,
+
+    @Column(name = "provider")
+    var provider: String? = null,
+
+    @Column(name = "provider_id")
+    var providerId: String? = null,
 
     @CreationTimestamp
     @Column(name = "registered_at")
@@ -54,6 +61,16 @@ class User(
                 password = request.password,
                 profile = Profile(request.nickname)
             ).apply { this.validate() }
+        }
+
+        fun fromOauth(info: OAuth2UserInfo, randomPassword: String): User {
+            return User(
+                email = info.email,
+                password = randomPassword,
+                profile = Profile(info.nickname),
+                provider = info.provider.name,
+                providerId = info.id
+            )
         }
     }
 }

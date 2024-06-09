@@ -36,7 +36,7 @@ class CommentServiceImpl(
     @Transactional
     override fun createComment(todoId: Long, request: CommentCreateWithUserDto): CommentDto {
         val currentUserId = SecurityUtils.getCurrentUserIdOrNull() ?: throw NoPermissionException()
-        val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
+        val todo = todoRepository.find(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
         val user = userRepository.findByIdOrNull(currentUserId)
             ?: throw ModelNotFoundException(
                 "User not found",
@@ -56,7 +56,7 @@ class CommentServiceImpl(
 
     @Transactional
     override fun createComment(todoId: Long, request: CommentCreateWithNamePasswordDto): CommentDto {
-        val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
+        val todo = todoRepository.find(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
 
         return CommentDto.from(
             commentRepository.save(

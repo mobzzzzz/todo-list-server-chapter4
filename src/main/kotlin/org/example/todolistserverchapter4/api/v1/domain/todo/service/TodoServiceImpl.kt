@@ -38,7 +38,7 @@ class TodoServiceImpl(
     }
 
     override fun getTodo(todoId: Long): TodoDto {
-        val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
+        val todo = todoRepository.find(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
         val comments = commentRepository.findByTodoId(todoId)
         val user =
             userRepository.findByIdOrNull(todo.user.id) ?: throw ModelNotFoundException(
@@ -68,7 +68,7 @@ class TodoServiceImpl(
 
     @Transactional
     override fun updateTodo(todoId: Long, request: TodoUpdateDto): TodoDto {
-        val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
+        val todo = todoRepository.find(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
 
         if (!SecurityUtils.hasPermission(todo.user.id)) throw NoPermissionException()
 
@@ -90,7 +90,7 @@ class TodoServiceImpl(
 
     @Transactional
     override fun updateTodoCardStatus(todoId: Long, request: TodoUpdateCardStatusDto): TodoDto {
-        val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
+        val todo = todoRepository.find(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
 
         if (!SecurityUtils.hasPermission(todo.user.id)) throw NoPermissionException()
 
@@ -109,7 +109,7 @@ class TodoServiceImpl(
 
     @Transactional
     override fun deleteTodo(todoId: Long) {
-        val todo = todoRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
+        val todo = todoRepository.find(todoId) ?: throw ModelNotFoundException("Todo not found", todoId)
 
         if (!SecurityUtils.hasPermission(todo.user.id)) throw NoPermissionException()
 

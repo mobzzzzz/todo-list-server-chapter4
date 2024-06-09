@@ -44,7 +44,7 @@ class TodoServiceTest : BehaviorSpec({
         every { comment.content } returns "Test Content"
         every { comments.content } returns listOf(comment)
 
-        every { todoRepository.findByIdOrNull(todoId) } returns todo
+        every { todoRepository.find(todoId) } returns todo
         every { userRepository.findByIdOrNull(userId) } returns user
         every { commentRepository.findByTodoId(todoId) } returns comments
 
@@ -62,7 +62,7 @@ class TodoServiceTest : BehaviorSpec({
     }
 
     Given("Todo가 존재하지 않을 때") {
-        every { todoRepository.findByIdOrNull(any()) } returns null
+        every { todoRepository.find(any()) } returns null
 
         When("특정 Todo를 호출하면") {
 

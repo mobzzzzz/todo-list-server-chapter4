@@ -204,7 +204,7 @@ class TodoServiceImpl(
 
 <br/>
 
-<details><summary>Todo QueryDSL Repository 예시</summary>
+## Todo QueryDSL Repository 예시
 
 ```kotlin
 @Repository
@@ -229,8 +229,6 @@ class TodoQueryDslRepository : QueryDslSupport() {
     }
 }
 ```
-
-</details>
 
 <br/>
 

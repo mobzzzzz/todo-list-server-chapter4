@@ -306,6 +306,98 @@ class Todo(
 
 #### 토큰은 클라이언트의 요청 헤더에 포함되어 있어야 합니다.
 
+<details><summary>Jwt plugin 예시</summary>
+
+```kotlin
+@Component
+class JwtPlugin(
+    @Value("\${auth.jwt.issuer}") private val issuer: String,
+    @Value("\${auth.jwt.secret}") private val secret: String,
+    @Value("\${auth.jwt.accessTokenExpirationHour}") private val accessTokenExpirationHour: Long,
+) {
+
+    fun validateToken(jwt: String): Result<Jws<Claims>> {
+        return kotlin.runCatching {
+            val key = Keys.hmacShaKeyFor(secret.toByteArray(StandardCharsets.UTF_8))
+            Jwts.parser().verifyWith(key).build().parseSignedClaims(jwt)
+        }
+    }
+
+    fun generateAccessToken(subject: String, role: String): String {
+        return generateToken(subject, role, Duration.ofHours(accessTokenExpirationHour))
+    }
+
+    private fun generateToken(subject: String, role: String, expirationPeriod: Duration): String {
+        val claims: Claims = Jwts.claims().add(mapOf("role" to role)).build()
+
+        val now = Instant.now()
+        val key = Keys.hmacShaKeyFor(secret.toByteArray(StandardCharsets.UTF_8))
+
+        return Jwts.builder()
+            .subject(subject)
+            .issuer(issuer)
+            .issuedAt(Date.from(now))
+            .expiration(Date.from(now.plus(expirationPeriod)))
+            .claims(claims)
+            .signWith(key)
+            .compact()
+    }
+}
+```
+
+</details>
+
+<details><summary>Jwt Authentication Filter 예시</summary>
+
+```kotlin
+@Component
+class JwtAuthenticationFilter(
+    private val jwtPlugin: JwtPlugin
+) : OncePerRequestFilter() {
+
+    companion object {
+        private val BEARER_PATTERN = Regex("^Bearer (.+?)$")
+    }
+
+    override fun doFilterInternal(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        filterChain: FilterChain
+    ) {
+        val jwt = request.getBearerToken()
+
+        if (jwt != null) {
+            jwtPlugin.validateToken(jwt)
+                .onSuccess {
+                    val userId = it.payload.subject.toLong()
+                    val role = it.payload.get("role", String::class.java)
+
+                    val principal = UserPrincipal(
+                        id = userId,
+                        roles = setOf(role)
+                    )
+
+                    val authentication = JwtAuthenticationToken(
+                        principal = principal,
+                        details = WebAuthenticationDetailsSource().buildDetails(request)
+                    )
+
+                    SecurityContextHolder.getContext().authentication = authentication
+                }
+        }
+
+        filterChain.doFilter(request, response)
+    }
+
+    private fun HttpServletRequest.getBearerToken(): String? {
+        val headerValue = this.getHeader(HttpHeaders.AUTHORIZATION) ?: return null
+        return BEARER_PATTERN.find(headerValue)?.groupValues?.get(1)
+    }
+}
+```
+
+</details>
+
 ### [Jwt Package로 이동](src/main/kotlin/org/example/todolistserverchapter4/api/v1/infra/security/jwt)
 
 ### [Security config으로 이동](src/main/kotlin/org/example/todolistserverchapter4/api/v1/infra/security/SecurityConfig.kt)
@@ -320,6 +412,87 @@ class Todo(
 
 ![oauth_flow.png](oauth_flow.png)
 
+<details><summary>OAuth2 Service / Client 예시</summary>
+
+```kotlin
+@Service
+class OAuth2ClientService(
+    private val clients: List<OAuth2Client>
+) {
+    fun redirectUrlBy(provider: OAuth2Provider): String {
+        val client = this.selectClient(provider)
+        return client.redirectUrl()
+    }
+
+    fun login(provider: OAuth2Provider, authorizationCode: String): OAuth2UserInfo {
+        val client = this.selectClient(provider)
+        return client.getAccessToken(authorizationCode)
+            .let { client.getUserInfo(it) }
+    }
+
+    private fun selectClient(provider: OAuth2Provider): OAuth2Client {
+        return clients.find { it.supports(provider) } ?: throw NotSupportedException("지원하지 않는 OAuth Provider 입니다.")
+    }
+}
+
+@Component
+class KakaoOAuth2Client(
+    @Value("\${kakao.client.id}") val clientId: String,
+    @Value("\${kakao.redirect.url}") val redirectUrl: String,
+    @Value("\${kakao.api.auth_url}") val authUrl: String,
+    @Value("\${kakao.api.token_url}") val tokenUrl: String,
+    @Value("\${kakao.api.profile_url}") val userUrl: String,
+    private val restClient: RestClient
+) : OAuth2Client {
+
+    override fun redirectUrl(): String {
+        return StringBuilder(authUrl)
+            .append("?client_id=").append(clientId)
+            .append("&redirect_uri=").append(redirectUrl)
+            .append("&response_type=").append("code")
+            .toString()
+    }
+
+    override fun getAccessToken(code: String): String {
+        val requestData = mutableMapOf(
+            "grant_type" to "authorization_code",
+            "client_id" to clientId,
+            "code" to code
+        )
+
+        return restClient.post()
+            .uri(tokenUrl)
+            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+            .body(LinkedMultiValueMap<String, String>().apply { this.setAll(requestData) })
+            .retrieve()
+            .onStatus(HttpStatusCode::isError) { _, _ ->
+                throw RuntimeException("카카오 AccessToken 조회 실패")
+            }
+            .body<KakaoTokenResponse>()
+            ?.accessToken
+            ?: throw RuntimeException("카카오 AccessToken 조회 실패")
+    }
+
+    override fun getUserInfo(accessToken: String): OAuth2UserInfo {
+        return restClient.get()
+            .uri(userUrl)
+            .header("Authorization", "Bearer $accessToken")
+            .retrieve()
+            .onStatus(HttpStatusCode::isError) { _, _ ->
+                throw RuntimeException("카카오 UserInfo 조회 실패")
+            }
+            .body<KakaoUserInfoResponse>()
+            ?: throw RuntimeException("카카오 UserInfo 조회 실패")
+    }
+
+    override fun supports(provider: OAuth2Provider): Boolean {
+        return provider == OAuth2Provider.Kakao
+    }
+}
+```
+
+</details>
+
 ### [oauth Package로 이동](src/main/kotlin/org/example/todolistserverchapter4/api/v1/oauth)
 
 # 테스트 코드
@@ -327,6 +500,54 @@ class Todo(
 #### 이 프로젝트는 간단한 테스트 코드를 포함하고 있습니다.
 
 #### Entity - Service - Controller 에 각각 해당하는 Unit 테스트가 존재합니다.
+
+<details><summary>User Entity Test 예시</summary>
+
+```kotlin
+class UserTest : BehaviorSpec({
+    Given("회원 가입 정보 Dto가 주어졌을 때") {
+        val signUpDto = SignUpDto(
+            email = "test@example.com",
+            password = "password",
+            nickname = "nickname"
+        )
+
+        When("User의 fromDto 메서드로 User를 생성하면") {
+            val user = User.fromDto(signUpDto)
+
+            Then("생성된 Entity의 정보는 회원가입 정보와 같아야 한다") {
+                user.email shouldBe signUpDto.email
+                user.password shouldBe signUpDto.password
+                user.profile.nickname shouldBe signUpDto.nickname
+            }
+        }
+
+        When("User의 프로필을 업데이트하면") {
+            val user = User.fromDto(signUpDto)
+            val testProfile = Profile(nickname = "newName")
+
+            user.updateProfile(testProfile)
+
+            Then("User의 프로필은 업데이트된 프로필과 같아야 한다") {
+                user.profile shouldBe testProfile
+            }
+        }
+
+        When("User 프로필 내용중 닉네임을 빈칸으로 업데이트하려고 하면") {
+            val user = User.fromDto(signUpDto)
+            val testProfile = Profile(nickname = "")
+
+            Then("닉네임 길이 불변성 검증에서 예외가 발생해야 한다") {
+                shouldThrow<IllegalArgumentException> {
+                    user.updateProfile(testProfile)
+                }
+            }
+        }
+    }
+})
+```
+
+</details>
 
 ### [User entity test로 이동](src/test/kotlin/org/example/todolistserverchapter4/domain/user/model/UserTest.kt)
 

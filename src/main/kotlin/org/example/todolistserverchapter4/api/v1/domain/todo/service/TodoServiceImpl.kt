@@ -75,19 +75,12 @@ class TodoServiceImpl(
         if (!SecurityUtils.hasPermission(todo.user.id)) throw NoPermissionException()
 
         val user = userRepository.findByIdOrNull(todo.user.id)
-            ?: throw ModelNotFoundException(
-                "User not found",
-                todo.user.id!!
-            )
+            ?: throw ModelNotFoundException("User not found", todo.user.id!!)
 
-        val (title, description) = request
-
-        todo.title = title
-        todo.description = description
-
-        val updatedTodo = todoRepository.save(todo)
-
-        return TodoDto.from(todo = updatedTodo, user = user)
+        return request.apply {
+            todo.title = title
+            todo.description = description
+        }.let { TodoDto.from(todo = todo, user = user) }
     }
 
     @Transactional
@@ -102,11 +95,8 @@ class TodoServiceImpl(
                 todo.user.id!!
             )
 
-        todo.cardStatus = TodoCardStatus.valueOf(request.status)
-
-        val updatedTodo = todoRepository.save(todo)
-
-        return TodoDto.from(todo = updatedTodo, user = user)
+        return request.apply { todo.cardStatus = TodoCardStatus.valueOf(status) }
+            .let { TodoDto.from(todo = todo, user = user) }
     }
 
     @Transactional

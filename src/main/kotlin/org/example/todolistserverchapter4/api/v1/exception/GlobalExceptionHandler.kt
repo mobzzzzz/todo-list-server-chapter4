@@ -40,7 +40,7 @@ class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception::class)
-    fun handleException(ex: Exception): ResponseEntity<String> {
-        return ResponseEntity("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR)
+    fun handleException(e: Exception): ResponseEntity<String> {
+        return ResponseEntity("Internal Server Error ${e.message}", HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }

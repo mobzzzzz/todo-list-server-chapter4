@@ -4,6 +4,8 @@ TODO List API 서버
 # 📝 프로젝트 소개
 
 - Spring Framework 기반으로 할 일 카드를 관리하는 REST API 서버입니다.
+- JWT 인증과 OAuth 로그인을 지원합니다.
+- 간단한 테스트 코드를 포함하고 있습니다.
 
 <h2>목차</h2>
 
@@ -12,6 +14,9 @@ TODO List API 서버
 > - [📦 패키지 구조](#패키지-구조)
 > - [🔄 통신 흐름](#통신-흐름)
 > - [⚙️ 주요 기능](#주요-기능)
+> - [🔐 JWT 인증](#jwt-인증)
+> - [🔑 OAuth 로그인](#oauth-로그인)
+> - [🧪 테스트 코드](#테스트-코드)
 > - [💻 개발 환경](#개발-환경)
 
 # [API 명세서](https://mobzz.notion.site/1c3b0b6d379f4d5aa93d4ebc058ecd12?v=3c5b824e364e4112b4865b03a336dd05&pvs=74)
@@ -162,7 +167,7 @@ class TodoServiceImpl(
 
     val userService: UserService
 ) : TodoService {
-    
+
     override fun getTodoList(userIds: List<Long>?, pageable: Pageable): Page<TodoDto> {
         val todos = if (userIds != null) {
             todoRepository.findByUserIdIn(userIds, pageable)
@@ -174,7 +179,7 @@ class TodoServiceImpl(
 
         return todos.map { DtoConverter.convertToTodoDto(todo = it, userDto = userDtos[it.userId.toInt()]) }
     }
-    
+
     /*...*/
 
     @Transactional
@@ -190,7 +195,7 @@ class TodoServiceImpl(
 
         return DtoConverter.convertToTodoDto(todo = todo, userDto = userDto)
     }
-    
+
     /*...*/
 }
 ```
@@ -199,11 +204,29 @@ class TodoServiceImpl(
 
 <br/>
 
-<details><summary>Todo Repository 예시</summary>
+<details><summary>Todo QueryDSL Repository 예시</summary>
 
 ```kotlin
-interface TodoRepository : JpaRepository<Todo, Long> {
-    fun findByUserIdIn(userIds: List<Long>, pageable: Pageable = Pageable.unpaged()): Page<Todo>
+@Repository
+class TodoQueryDslRepository : QueryDslSupport() {
+
+    private val todo = QTodo.todo
+    private val comment = QComment.comment
+
+    fun findWithComments(todoId: Long): Pair<Todo?, List<Comment>> {
+        // querydsl 에서 지원하는 Tuple
+        val result: List<Tuple> = queryFactory
+            .select(todo, comment)
+            .from(todo)
+            .leftJoin(comment).on(todo.id.eq(comment.todo.id))
+            .where(todo.id.eq(todoId))
+            .fetch()
+
+        val todo = result[0].get(todo)
+        val comments = result.mapNotNull { it.get(comment) }
+
+        return Pair(todo, comments)
+    }
 }
 ```
 
@@ -275,11 +298,50 @@ class Todo(
 
 </details>
 
+# JWT 인증
+
+#### 이 프로젝트는 JWT 인증을 지원합니다. 사용자가 로그인하면 서버는 JWT 토큰을 생성하여 사용자에게 반환합니다.
+
+#### 사용자는 이 토큰을 사용하여 인증이 필요한 API를 호출할 수 있습니다.
+
+#### Spring security에서 JWT 인증을 사용하고 있으며, 토큰은 서버에서 발급하고 검증합니다.
+
+#### 토큰은 클라이언트의 요청 헤더에 포함되어 있어야 합니다.
+
+### [Jwt Package로 이동](src/main/kotlin/org/example/todolistserverchapter4/api/v1/infra/security/jwt)
+
+### [Security config으로 이동](src/main/kotlin/org/example/todolistserverchapter4/api/v1/infra/security/SecurityConfig.kt)
+
+### [Security util로 이동](src/main/kotlin/org/example/todolistserverchapter4/api/v1/infra/security/SecurityUtils.kt)
+
+# OAuth 로그인
+
+#### 이 프로젝트는 OAuth 로그인을 지원합니다. 현재 카카오, 네이버를 통한 로그인을 지원하고 있습니다.
+
+#### 챌린지반 강의에서 배운 아래 구조를 참고했습니다.
+
+![oauth_flow.png](oauth_flow.png)
+
+### [oauth Package로 이동](src/main/kotlin/org/example/todolistserverchapter4/api/v1/oauth)
+
+# 테스트 코드
+
+#### 이 프로젝트는 간단한 테스트 코드를 포함하고 있습니다.
+
+#### Entity - Service - Controller 에 각각 해당하는 Unit 테스트가 존재합니다.
+
+### [User entity test로 이동](src/test/kotlin/org/example/todolistserverchapter4/domain/user/model/UserTest.kt)
+
+### [Todo service test로 이동](src/test/kotlin/org/example/todolistserverchapter4/domain/todo/service/TodoServiceTest.kt)
+
+### [Comment controller test로 이동](src/test/kotlin/org/example/todolistserverchapter4/domain/comment/controller/CommentControllerTest.kt)
+
 # 개발 환경
 
 - 개발 언어: Kotlin 1.9.23, JDK 21
 - IDE: IntelliJ IDEA 2024.1
 - Build tool: Gradle
-- 프레임워크: Spring Boot 3.2.5
-- 라이브러리: Springdoc 2.5.0
+- 프레임워크: Spring Boot 3.2.5, Spring Security 5.6.0, QueryDSL 5.0.0
+- 라이브러리: Springdoc 2.5.0, jjwt 0.12.5
+- 테스트 라이브러리: Kotest 5.5.5, Mockk 1.13.8
 - 데이터베이스: PostgresQL 14.1 with Supabase
